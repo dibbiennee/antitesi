@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0d0b09">
+<title>Pannello · ANTITESI</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=clash-display@600,700&display=swap" rel="stylesheet">
+<!-- JetBrains Mono non e' ospitato da Fontshare: va preso da Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #e8a03f; --accent-d: #c98a36; --on-accent: #241d12;
+    --bg: #0d0b09; --bg2: #15110d;
+    --surface: rgba(255,255,255,0.035); --surface-2: rgba(255,255,255,0.06); --surface-3: rgba(255,255,255,0.09);
+    --border: rgba(255,255,255,0.10); --border-2: rgba(255,255,255,0.16);
+    --text: #f3efe7; --muted: #8a8378; --faint: #5f5a51;
+    --success: #3f9d6a; --danger: #d2563f;
+    --r: 14px; --r-sm: 10px;
+    --font: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+    --display: 'Clash Display', var(--font);
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    background: radial-gradient(120% 60% at 50% -10%, #1c160f 0%, var(--bg) 60%);
+    color: var(--text); font-family: var(--font); min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* ===== HEADER ===== */
+  header.top {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(13,11,9,0.86); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); padding: 14px 18px 0;
+  }
+  .top-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .wordmark { font-family: var(--display); font-weight: 700; font-size: 19px; letter-spacing: 0.08em; }
+  .top-right { display: flex; align-items: center; gap: 14px; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px;
+            letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+  .status.ready .dot { background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .status.error .dot { background: var(--danger); }
+  .status.loading .dot { background: var(--accent); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .seesite { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--accent);
+             text-decoration: none; white-space: nowrap; }
+
+  /* tabs */
+  .tabs { display: flex; gap: 4px; overflow-x: auto; margin-top: 12px; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: 0 0 auto; padding: 10px 12px 12px; background: none; border: none; cursor: pointer;
+         font-family: var(--font); font-size: 14px; font-weight: 500; color: var(--muted);
+         border-bottom: 2px solid transparent; position: relative; }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+  .tab .pip { position: absolute; top: 6px; right: 4px; width: 6px; height: 6px; border-radius: 50%;
+              background: var(--accent); display: none; }
+  .tab.dirty .pip { display: block; }
+
+  /* dirty banner */
+  .dirty-banner { display: none; align-items: center; gap: 8px; padding: 9px 18px;
+    background: rgba(232,160,63,0.10); border-bottom: 1px solid rgba(232,160,63,0.25);
+    color: var(--accent); font-size: 12.5px; }
+  .dirty-banner.show { display: flex; }
+  .dirty-banner .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: 0 0 auto; }
+
+  /* ===== CONTENT ===== */
+  main { flex: 1; padding: 16px 16px 130px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+               color: var(--faint); margin: 4px 2px 12px; }
+  .hint { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 4px 2px 14px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+          margin-bottom: 12px; overflow: hidden; }
+  .card-open { padding: 14px; }
+
+  /* collapsed row */
+  .card-collapsed { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; }
+  .card-collapsed:hover { background: var(--surface-2); }
+  .card-collapsed .chev { margin-left: auto; color: var(--muted); transition: transform .2s; }
+
+  .datebox { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 10px; display: flex; flex-direction: column;
+             align-items: center; justify-content: center; background: rgba(232,160,63,0.12);
+             border: 1px solid rgba(232,160,63,0.3); }
+  .datebox .d { font-family: var(--display); font-weight: 700; font-size: 19px; line-height: 1; color: var(--accent); }
+  .datebox .m { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.1em; color: var(--accent-d); text-transform: uppercase; margin-top: 2px; }
+  .datebox.range .d { font-size: 12px; }
+
+  .row-title { min-width: 0; }
+  .row-title .t { font-family: var(--display); font-weight: 600; font-size: 16px; color: var(--text);
+                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-title .s { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* open card header */
+  .open-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .open-head .row-title { flex: 1; }
+  .del-link { background: none; border: none; color: var(--danger); font-size: 12.5px; cursor: pointer;
+              font-family: var(--font); padding: 2px 0; white-space: nowrap; }
+
+  label { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+          text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
+  input[type=text], input[type=date], input[type=email], input[type=url] {
+    width: 100%; height: 44px; padding: 0 13px; background: var(--bg2); border: 1.5px solid var(--border);
+    border-radius: var(--r-sm); color: var(--text); font-size: 15px; font-family: inherit; }
+  input::placeholder { color: var(--faint); }
+  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,160,63,0.12); }
+  input[type=date] { font-family: var(--mono); font-size: 13px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; margin: 16px 0 4px; }
+  .toggle-row span { font-size: 14.5px; font-weight: 500; }
+  .toggle { width: 46px; height: 26px; border-radius: 999px; background: var(--surface-3); border: 1px solid var(--border-2);
+            position: relative; cursor: pointer; flex: 0 0 auto; transition: background .2s; }
+  .toggle .knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%;
+                  background: #cfc8bc; transition: transform .2s, background .2s; }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle.on .knob { transform: translateX(20px); background: var(--on-accent); }
+
+  /* upload slot */
+  .upl { display: flex; align-items: center; gap: 13px; margin-top: 6px; }
+  .upl .thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex: 0 0 auto;
+                background: var(--surface-2); border: 1px solid var(--border); display: flex; align-items: center;
+                justify-content: center; font-family: var(--mono); font-size: 9px; color: var(--faint); }
+  .upl.circle .thumb { border-radius: 50%; }
+  .upl-info { min-width: 0; flex: 1; }
+  .upl-name { font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .upl-actions { display: flex; gap: 14px; margin-top: 5px; }
+  .upl-actions button, .filebtn { background: none; border: none; color: var(--accent); font-size: 12.5px;
+              cursor: pointer; font-family: var(--font); padding: 0; position: relative; overflow: hidden; }
+  .upl-actions .rm { color: var(--muted); }
+  .filebtn input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 100px; }
+  .progress { height: 4px; border-radius: 99px; background: var(--surface-3); margin-top: 8px; overflow: hidden; }
+  .progress i { display: block; height: 100%; background: var(--accent); width: 40%; animation: prog 1.1s ease-in-out infinite; }
+  @keyframes prog { 0%{margin-left:-40%} 100%{margin-left:100%} }
+
+  /* add button */
+  .add-btn { width: 100%; height: 50px; background: none; border: 1.5px dashed var(--border-2); border-radius: var(--r);
+             color: var(--accent); font-size: 14px; font-family: inherit; cursor: pointer; margin-top: 4px; }
+  .add-btn:hover { background: var(--surface); }
+
+  /* empty state */
+  .empty { text-align: center; padding: 40px 20px; border: 1.5px dashed var(--border); border-radius: var(--r); }
+  .empty .plus { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--border-2); color: var(--muted);
+                 display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 14px; }
+  .empty h4 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+  .empty p { margin: 0 0 18px; font-size: 13px; color: var(--muted); }
+
+  /* preview button row */
+  .btn-amber { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px;
+    padding: 0 18px; background: var(--accent); color: var(--on-accent); border: none; border-radius: 11px;
+    font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px;
+    padding: 0 16px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border-2);
+    border-radius: 11px; font-family: inherit; font-size: 14px; cursor: pointer; }
+
+  /* booking preview */
+  .bk-preview { margin-top: 16px; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); text-align: center; }
+  .bk-preview .lab { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+  .bk-cta { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 999px;
+            background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 14px; }
+
+  /* guide */
+  .guide h4 { font-size: 14px; margin: 22px 0 8px; color: var(--accent); }
+  .guide p { font-size: 14px; line-height: 1.55; color: var(--text); margin: 0 0 12px; }
+  .guide ol { margin: 0 0 12px; padding-left: 20px; }
+  .guide li { font-size: 14px; line-height: 1.5; margin-bottom: 6px; }
+  .guide strong { color: #fff; } .guide em { color: var(--accent-d); font-style: normal; }
+
+  /* ===== SAVE BAR ===== */
+  .savebar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 15;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, transparent, var(--bg) 36%); }
+  .savebar-inner { max-width: 480px; margin: 0 auto; }
+  .save-btn { width: 100%; height: 50px; border: none; border-radius: 13px; font-family: inherit; font-size: 15px;
+    font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px;
+    background: var(--accent); color: var(--on-accent); transition: background .2s, opacity .2s; }
+  .save-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--on-accent); opacity: .55; }
+  .save-btn:disabled { background: var(--surface-3); color: var(--muted); cursor: default; }
+  .save-btn.saving { background: var(--accent-d); }
+  .save-btn.saved { background: var(--success); color: #fff; }
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+             border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== PREVIEW OVERLAY ===== */
+  .preview { position: fixed; inset: 0; z-index: 40; background: var(--bg); display: none; flex-direction: column; }
+  .preview.show { display: flex; }
+  .preview-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .preview-bar .ttl { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .preview iframe { flex: 1; width: 100%; border: none; background: #000; }
+
+  /* ===== MODAL ===== */
+  .modal-bg { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+    display: none; align-items: center; justify-content: center; padding: 24px; }
+  .modal-bg.show { display: flex; }
+  .modal { width: 100%; max-width: 360px; background: var(--bg2); border: 1px solid var(--border-2);
+    border-radius: var(--r); padding: 22px; }
+  .modal h3 { margin: 0 0 8px; font-size: 17px; }
+  .modal p { margin: 0 0 20px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions button { flex: 1; height: 46px; border-radius: 11px; font-family: inherit; font-size: 14px;
+    font-weight: 600; cursor: pointer; border: 1px solid var(--border-2); background: var(--surface-2); color: var(--text); }
+  .modal-actions .primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .modal-actions .danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  /* ===== TOAST ===== */
+  .toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%) translateY(16px); z-index: 70;
+    display: flex; align-items: center; gap: 10px; max-width: 88%; padding: 12px 16px; border-radius: 12px;
+    background: #1d2820; border: 1px solid var(--success); color: #d6f1e1; font-size: 13.5px;
+    opacity: 0; transition: all .25s; pointer-events: none; }
+  .toast .ic { width: 20px; height: 20px; border-radius: 50%; background: var(--success); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; flex: 0 0 auto; }
+  .toast.err { background: #2a1614; border-color: var(--danger); color: #f7d3cc; }
+  .toast.err .ic { background: var(--danger); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toastLink { display: none; margin-left: 4px; color: #9fe7c1; font-weight: 600; text-decoration: underline;
+    white-space: nowrap; pointer-events: auto; }
+  .toast.show #toastLink.on { display: inline; }
+
+  /* skeleton */
+  .skel { height: 120px; border-radius: var(--r); margin-bottom: 12px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 37%, var(--surface) 63%);
+    background-size: 400% 100%; animation: shimmer 1.4s infinite; }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+</style>
+</head>
+<body>
+<style>
+  .gate { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center;
+          justify-content: center; padding: 24px; background: #050505; }
+  .gate[hidden] { display: none; }
+  .gate-box { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px;
+              font-family: var(--font-body, system-ui, sans-serif); }
+  .gate-title { margin: 0 0 4px; text-align: center; color: #8a8278;
+                font-family: var(--font-mono, ui-monospace, monospace);
+                font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; }
+  .gate-box input { width: 100%; padding: 14px 16px; font-size: 16px; color: #f5f1ea;
+                    background: #0f0f0f; border: 1px solid #1f1f1f; border-radius: 12px; }
+  .gate-box input:focus { outline: 2px solid #e8a03f; outline-offset: 2px; }
+  .gate-box button { width: 100%; padding: 14px 16px; font-size: 15px; font-weight: 700;
+                     color: #000; background: #e8a03f; border: 0; border-radius: 12px; cursor: pointer; }
+  .gate-box button[disabled] { opacity: 0.6; cursor: default; }
+  .gate-err { margin: 0; min-height: 18px; text-align: center; color: #e06b5a; font-size: 13px; }
+</style>
+
+<div class="gate" id="gate" hidden>
+  <form class="gate-box" id="gateForm">
+    <p class="gate-title">Pannello Antitesi</p>
+    <input type="password" id="gatePwd" placeholder="Password" autocomplete="current-password" required>
+    <button type="submit" id="gateBtn">Entra</button>
+    <p class="gate-err" id="gateErr" role="alert"></p>
+  </form>
+</div>
+
+<div class="app">
+  <header class="top">
+    <div class="top-row">
+      <div class="wordmark">ANTITESI</div>
+      <div class="top-right">
+        <span class="status loading" id="status"><span class="dot"></span><span id="statusTxt">carico…</span></span>
+        <a class="seesite" id="previewBtn" href="javascript:void 0">Vedi sito ↗</a>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="date">Date</button>
+      <button class="tab" data-tab="foto">Foto</button>
+      <button class="tab" data-tab="link">Link</button>
+      <button class="tab" data-tab="booking">Booking</button>
+      <button class="tab" data-tab="tracce">Tracce</button>
+      <button class="tab" data-tab="guida">Guida</button>
+    </nav>
+  </header>
+
+  <div class="dirty-banner" id="dirtyBanner"><span class="dot"></span><span id="dirtyTxt"></span></div>
+
+  <main>
+    <section class="panel active" id="panel-date">
+      <div class="sec-label" id="dateCount">eventi in programma</div>
+      <div id="events"></div>
+      <button class="add-btn" id="addEvent">+ Aggiungi data</button>
+    </section>
+
+    <section class="panel" id="panel-foto">
+      <div class="sec-label">Foto del sito</div>
+      <p class="hint">Le immagini si ridimensionano da sole prima dell'invio. Tocca “Cambia” per sostituirle.</p>
+      <div class="card card-open"><div id="fotoSlots"></div></div>
+    </section>
+
+    <section class="panel" id="panel-link">
+      <div class="sec-label">Link & social</div>
+      <div class="card card-open">
+        <label>Tagline (sotto il nome)</label><input type="text" id="c-tagline" placeholder="DJ &amp; Producer">
+        <label>YouTube</label><input type="url" id="c-youtube" placeholder="https://youtube.com/@…">
+        <label>Spotify (artista)</label><input type="url" id="c-spotify" placeholder="https://open.spotify.com/artist/…">
+        <label>SoundCloud</label><input type="url" id="c-soundcloud" placeholder="https://…">
+        <label>TikTok</label><input type="url" id="c-tiktok" placeholder="https://tiktok.com/@…">
+        <label>Instagram (link)</label><input type="url" id="c-instagram" placeholder="https://instagram.com/…">
+        <label>Instagram (testo mostrato)</label><input type="text" id="c-instagramHandle" placeholder="@danceintoparadise">
+      </div>
+    </section>
+
+    <section class="panel" id="panel-booking">
+      <div class="sec-label">Booking</div>
+      <div class="card card-open">
+        <label>Email per il booking</label><input type="email" id="c-email" placeholder="contactantitesi@gmail.com">
+        <div class="bk-preview">
+          <div class="lab">Anteprima sul sito</div>
+          <span class="bk-cta">Scrivi ad Antitesi →</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-tracce">
+      <div class="sec-label" id="trackCount">uscite</div>
+      <div id="tracks"></div>
+      <button class="add-btn" id="addTrack">+ Aggiungi traccia</button>
+    </section>
+
+    <section class="panel guide" id="panel-guida">
+      <div class="sec-label">Come si usa</div>
+      <div class="card card-open guide">
+        <p>Da qui aggiorni il tuo sito da solo, dal telefono. Le modifiche vanno <strong>live in pochi secondi</strong>. Ogni scheda ha il suo tasto <strong>Salva</strong> in basso: premilo dopo le modifiche.</p>
+        <h4>📅 Date</h4>
+        <ol>
+          <li><strong>+ Aggiungi data</strong>, metti data, locale e città con provincia (es. <em>Roma (RM)</em>).</li>
+          <li>Per un periodo attiva <strong>Fascia di date</strong> e imposta inizio/fine.</li>
+          <li>Carica la locandina e i link se vuoi, poi <strong>Salva date</strong>.</li>
+        </ol>
+        <h4>🎵 Tracce</h4>
+        <ol><li>Titolo, data e copertina, link Spotify ed eventuale clip, poi <strong>Salva tracce</strong>. La più recente va in evidenza sul sito.</li></ol>
+        <h4>📷 Foto · 🔗 Link · ✉️ Booking</h4>
+        <p>Trovi già i valori attuali. Modifica e premi <strong>Salva contenuti</strong>.</p>
+        <h4>⚠️ Importante</h4>
+        <p>Salva ogni scheda dopo le modifiche. Questo pannello vive a un <strong>link segreto</strong>: non condividerlo.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="savebar" id="savebar">
+    <div class="savebar-inner">
+      <button class="save-btn" id="saveBtn" disabled><span class="dot"></span><span id="saveTxt">Salva</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- preview overlay -->
+<div class="preview" id="preview">
+  <div class="preview-bar">
+    <button class="btn-ghost" id="closePreview" style="height:38px;padding:0 14px">← Editor</button>
+    <span class="ttl">Anteprima sito</span>
+    <a class="seesite" href="https://antitesi.link" target="_blank" rel="noopener" style="margin-left:auto">Apri ↗</a>
+  </div>
+  <iframe id="previewFrame" title="Anteprima"></iframe>
+</div>
+
+<!-- exit guard modal -->
+<div class="modal-bg" id="exitModal">
+  <div class="modal">
+    <h3>Modifiche non salvate</h3>
+    <p>Hai modifiche non salvate in questa scheda. Vuoi salvarle prima di uscire?</p>
+    <div class="modal-actions">
+      <button id="exitDiscard">Esci comunque</button>
+      <button class="primary" id="exitSave">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- delete confirm modal -->
+<div class="modal-bg" id="delModal">
+  <div class="modal">
+    <h3 id="delTitle">Eliminare?</h3>
+    <p id="delBody">L'azione non è annullabile.</p>
+    <div class="modal-actions">
+      <button id="delCancel">Annulla</button>
+      <button class="danger" id="delOk">Elimina</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ic" id="toastIc">✓</span><span id="toastTxt"></span><a id="toastLink" href="https://antitesi.link" target="_blank" rel="noopener">Ricarica il sito ↗</a></div>
+
+<script>
+let TOKEN = '';   // valorizzato dall'accesso, mai scritto nel codice
+const SITE_URL = 'https://antitesi.link';
+const MONTHS = ['GEN','FEB','MAR','APR','MAG','GIU','LUG','AGO','SET','OTT','NOV','DIC'];
+
+// ---------- state ----------
+const ST = { events: [], content: {}, tracks: [] };
+const BASE = { events: [], content: {}, tracks: [] };
+let activeTab = 'date';
+let expDate = 0, expTrk = 0;        // accordion: open card index
+let saveBusy = false;
+let pendingTab = null;              // target tab during exit-guard
+let delCtx = null;                  // {kind, idx} during delete confirm
+
+const clone = x => JSON.parse(JSON.stringify(x == null ? null : x));
+const $ = id => document.getElementById(id);
+const DOMAIN = { date: 'events', tracce: 'tracks', foto: 'content', link: 'content', booking: 'content', guida: null };
+
+// ---------- api ----------
+async function api(path, method = 'GET', body) {
+  const opt = { method, headers: {} };
+  if (body !== undefined) { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
+  if (method !== 'GET') opt.headers['Authorization'] = 'Bearer ' + TOKEN;
+  const r = await fetch(path, opt);
+  if (!r.ok) { let e; try { e = (await r.json()).error; } catch (_) {} throw new Error(e || ('HTTP ' + r.status)); }
+  return r.json();
+}
+
+// ---------- toast ----------
+let toastT;
+function toast(msg, isErr, published) {
+  $('toastTxt').textContent = msg; $('toastIc').textContent = isErr ? '!' : '✓';
+  $('toastLink').className = published ? 'on' : '';
+  const el = $('toast'); el.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(toastT); toastT = setTimeout(() => el.className = 'toast' + (isErr ? ' err' : ''), published ? 5200 : 2800);
+}
+
+// ---------- upload ----------
+function readDataUrl(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); }); }
+function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+async function toUploadDataUrl(file, maxDim = 1600, q = 0.82) {
+  if (!file.type.startsWith('image/')) return readDataUrl(file);
+  const img = await loadImg(await readDataUrl(file));
+  let w = img.width, h = img.height;
+  if (Math.max(w, h) > maxDim) { const s = maxDim / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); }
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(img, 0, 0, w, h);
+  return c.toDataURL('image/jpeg', q);
+}
+async function uploadFile(file) {
+  const dataUrl = await toUploadDataUrl(file);
+  const r = await api('/api/upload', 'POST', { filename: file.name, dataUrl });
+  return r.url;
+}
+
+// ---------- dirty ----------
+function diffCount(cur, base) {
+  if (Array.isArray(cur) || Array.isArray(base)) {
+    const a = cur || [], b = base || [], n = Math.max(a.length, b.length); let c = 0;
+    for (let i = 0; i < n; i++) if (JSON.stringify(a[i]) !== JSON.stringify(b[i])) c++;
+    return c;
+  }
+  const a = cur || {}, b = base || {}, keys = new Set([...Object.keys(a), ...Object.keys(b)]); let c = 0;
+  keys.forEach(k => {
+    const va = a[k], vb = b[k];
+    if (va && typeof va === 'object') c += diffCount(va, vb || {});
+    else if ((va || '') !== (vb || '')) c++;
+  });
+  return c;
+}
+function dirtyOf(tab) { const d = DOMAIN[tab]; return d ? diffCount(ST[d], BASE[d]) : 0; }
+function anyDirty() { return ['events', 'tracks', 'content'].some(d => diffCount(ST[d], BASE[d]) > 0); }
+
+function updateDirtyUI() {
+  // tab pips
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('dirty', dirtyOf(t.dataset.tab) > 0));
+  // banner for active tab
+  const n = dirtyOf(activeTab);
+  const b = $('dirtyBanner');
+  if (n > 0) { b.classList.add('show'); $('dirtyTxt').textContent = `Hai ${n} modific${n === 1 ? 'a' : 'he'} non salvat${n === 1 ? 'a' : 'e'}`; }
+  else b.classList.remove('show');
+  updateSaveBar();
+}
+
+// ---------- save bar ----------
+function updateSaveBar() {
+  const bar = $('savebar'), btn = $('saveBtn');
+  if (activeTab === 'guida') { bar.style.display = 'none'; return; }
+  bar.style.display = 'block';
+  if (saveBusy) return;
+  const label = activeTab === 'date' ? 'Salva date' : activeTab === 'tracce' ? 'Salva tracce' : 'Salva contenuti';
+  btn.className = 'save-btn'; $('saveTxt').textContent = label;
+  btn.disabled = dirtyOf(activeTab) === 0;
+}
+
+async function doSave() {
+  if (saveBusy || dirtyOf(activeTab) === 0) return;
+  saveBusy = true;
+  const btn = $('saveBtn');
+  btn.className = 'save-btn saving'; btn.disabled = false;
+  $('saveTxt').textContent = 'Salvo…';
+  btn.querySelector('.dot').outerHTML = '<span class="spinner"></span>';
+  const domain = DOMAIN[activeTab];
+  try {
+    if (domain === 'events') { const r = await api('/api/events', 'POST', serializeEvents()); BASE.events = clone(ST.events); toast(`Pubblicato ✓ — ${r.count} date online`, false, true); }
+    else if (domain === 'tracks') { const r = await api('/api/tracks', 'POST', serializeTracks()); BASE.tracks = clone(ST.tracks); toast(`Pubblicato ✓ — ${r.count} tracce online`, false, true); }
+    else { await api('/api/content', 'POST', ST.content); BASE.content = clone(ST.content); toast('Pubblicato ✓ — contenuti online', false, true); }
+    saveBusy = false;
+    btn.className = 'save-btn saved'; btn.innerHTML = '<span>Salvato ✓</span>';
+    setTimeout(() => { btn.innerHTML = '<span class="dot"></span><span id="saveTxt">Salva</span>'; updateDirtyUI(); }, 1400);
+  } catch (err) {
+    saveBusy = false;
+    btn.innerHTML = '<span class="dot"></span><span id="saveTxt">Salva</span>';
+    toast('Errore: ' + err.message, true); updateSaveBar();
+  }
+}
+
+// ---------- helpers ----------
+function esc(s) { return (s == null ? '' : String(s)).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function dateBox(dateStr, endStr) {
+  const d = dateStr ? new Date(dateStr) : null;
+  if (!d || isNaN(d)) return `<div class="datebox"><span class="d">—</span></div>`;
+  if (endStr) { const e = new Date(endStr); if (!isNaN(e)) return `<div class="datebox range"><span class="d">${d.getDate()}–${e.getDate()}</span><span class="m">${MONTHS[d.getMonth()]}</span></div>`; }
+  return `<div class="datebox"><span class="d">${d.getDate()}</span><span class="m">${MONTHS[d.getMonth()]}</span></div>`;
+}
+
+// ================= EVENTS =================
+function byDateAsc(a, b) { if (a.date && b.date) return new Date(a.date) - new Date(b.date); if (a.date) return -1; if (b.date) return 1; return 0; }
+function byDateDesc(a, b) { if (a.date && b.date) return new Date(b.date) - new Date(a.date); if (a.date) return -1; if (b.date) return 1; return 0; }
+
+function renderEvents() {
+  ST.events.sort(byDateAsc);
+  if (expDate >= ST.events.length) expDate = ST.events.length - 1;
+  const c = $('events'); c.innerHTML = '';
+  $('dateCount').textContent = ST.events.length ? `${ST.events.length} event${ST.events.length === 1 ? 'o' : 'i'} in programma` : '';
+  if (!ST.events.length) {
+    c.innerHTML = `<div class="empty"><div class="plus">+</div><h4>Nessuna data in programma</h4><p>Aggiungi il tuo primo evento per mostrarlo sul sito.</p></div>`;
+    return;
+  }
+  ST.events.forEach((e, i) => c.appendChild(i === expDate ? eventOpen(e, i) : eventCollapsed(e, i)));
+}
+function eventCollapsed(e, i) {
+  const div = document.createElement('div'); div.className = 'card';
+  div.innerHTML = `<div class="card-collapsed">${dateBox(e.date, e.endDate)}
+    <div class="row-title"><div class="t">${esc(e.venue || e.title || 'Senza titolo')}</div><div class="s">${esc(e.city || '')}</div></div>
+    <span class="chev">▾</span></div>`;
+  div.querySelector('.card-collapsed').onclick = () => { syncOpenEvent(); expDate = i; renderEvents(); };
+  return div;
+}
+function eventOpen(e, i) {
+  const div = document.createElement('div'); div.className = 'card'; div.dataset.idx = i;
+  const isRange = !!e.endDate;
+  div.innerHTML = `<div class="card-open">
+    <div class="open-head">${dateBox(e.date, e.endDate)}
+      <div class="row-title"><div class="t">${esc(e.venue || e.title || 'Nuovo evento')}</div><div class="s">${esc(e.city || '')}</div></div>
+      <button class="del-link" data-act="del">Elimina</button></div>
+    <div class="row2">
+      <div><label>Data</label><input type="date" data-f="date" value="${e.date || ''}"></div>
+      <div data-end style="${isRange ? '' : 'display:none'}"><label>Data fine</label><input type="date" data-f="endDate" value="${e.endDate || ''}"></div>
+    </div>
+    <div class="toggle-row"><span>Fascia di date</span><div class="toggle ${isRange ? 'on' : ''}" data-f="rangeToggle"><div class="knob"></div></div></div>
+    <label>Locale</label><input type="text" data-f="venue" value="${esc(e.venue)}" placeholder="Es. Singita">
+    <label>Titolo evento (opz.)</label><input type="text" data-f="title" value="${esc(e.title)}" placeholder="Solo se diverso dal locale">
+    <label>Città (prov.)</label><input type="text" data-f="city" value="${esc(e.city)}" placeholder="Es. Monte Argentario (GR)">
+    <label>Locandina</label>${uploadSlot('poster', e.poster, 'IMG')}
+    <div class="row2">
+      <div><label>Instagram</label><input type="url" data-f="ig_link" value="${esc(e.ig_link)}" placeholder="link"></div>
+      <div><label>TikTok</label><input type="url" data-f="tiktok_link" value="${esc(e.tiktok_link)}" placeholder="link"></div>
+    </div></div>`;
+
+  div.querySelector('[data-act="del"]').onclick = () => askDelete('event', i);
+  div.querySelector('[data-f="rangeToggle"]').onclick = () => {
+    syncOpenEvent(); ST.events[i].endDate = ST.events[i].endDate ? '' : (ST.events[i].date || ''); renderEvents(); updateDirtyUI();
+  };
+  div.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { syncOpenEvent(); updateDirtyUI(); }));
+  wireUpload(div, 'poster', i, 'event');
+  return div;
+}
+function syncOpenEvent() {
+  const card = document.querySelector('#events .card-open'); if (!card) return;
+  const i = +card.closest('.card').dataset.idx; const e = ST.events[i]; if (!e) return;
+  const g = f => { const el = card.querySelector(`[data-f="${f}"]`); return el ? el.value.trim() : (e[f] || ''); };
+  e.date = g('date'); e.venue = g('venue'); e.title = g('title'); e.city = g('city');
+  e.ig_link = g('ig_link'); e.tiktok_link = g('tiktok_link');
+  const rangeOn = card.querySelector('[data-f="rangeToggle"]').classList.contains('on');
+  e.endDate = rangeOn ? g('endDate') : '';
+}
+function serializeEvents() {
+  syncOpenEvent();
+  return ST.events.filter(e => e.date).map(e => {
+    const o = { date: e.date };
+    if (e.endDate) o.endDate = e.endDate;
+    if (e.title) o.title = e.title; if (e.venue) o.venue = e.venue; if (e.city) o.city = e.city;
+    if (e.poster) o.poster = e.poster; if (e.ig_link) o.ig_link = e.ig_link; if (e.tiktok_link) o.tiktok_link = e.tiktok_link;
+    return o;
+  });
+}
+$('addEvent').onclick = () => { syncOpenEvent(); ST.events.push({ date: '' }); expDate = ST.events.length - 1; renderEvents(); updateDirtyUI(); };
+
+// ================= TRACKS =================
+function renderTracks() {
+  ST.tracks.sort(byDateDesc);
+  if (expTrk >= ST.tracks.length) expTrk = ST.tracks.length - 1;
+  const c = $('tracks'); c.innerHTML = '';
+  $('trackCount').textContent = ST.tracks.length ? `${ST.tracks.length} uscit${ST.tracks.length === 1 ? 'a' : 'e'}` : '';
+  if (!ST.tracks.length) {
+    c.innerHTML = `<div class="empty"><div class="plus">+</div><h4>Nessuna traccia</h4><p>Aggiungi la tua prima uscita musicale.</p></div>`;
+    return;
+  }
+  ST.tracks.forEach((t, i) => c.appendChild(i === expTrk ? trackOpen(t, i) : trackCollapsed(t, i)));
+}
+function trackCollapsed(t, i) {
+  const div = document.createElement('div'); div.className = 'card';
+  const star = i === 0 ? ' ★' : '';
+  div.innerHTML = `<div class="card-collapsed">${dateBox(t.date)}
+    <div class="row-title"><div class="t">${esc(t.title || 'Senza titolo')}${star}</div><div class="s">${esc(t.label || '')}</div></div>
+    <span class="chev">▾</span></div>`;
+  div.querySelector('.card-collapsed').onclick = () => { syncOpenTrack(); expTrk = i; renderTracks(); };
+  return div;
+}
+function trackOpen(t, i) {
+  const div = document.createElement('div'); div.className = 'card'; div.dataset.idx = i;
+  const star = i === 0 ? `<span style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--accent)">★ IN EVIDENZA</span>` : '';
+  div.innerHTML = `<div class="card-open">
+    <div class="open-head"><div class="row-title"><div class="t">${esc(t.title || 'Nuova traccia')}</div>${star}</div>
+      <button class="del-link" data-act="del">Elimina</button></div>
+    <label>Titolo</label><input type="text" data-f="title" value="${esc(t.title)}" placeholder="Es. Zaya">
+    <div class="row2">
+      <div><label>Etichetta/badge</label><input type="text" data-f="label" value="${esc(t.label)}" placeholder="Es. Out now"></div>
+      <div><label>Data uscita</label><input type="date" data-f="date" value="${t.date || ''}"></div>
+    </div>
+    <label>Copertina</label>${uploadSlot('cover', t.cover, 'IMG')}
+    <label>Link streaming</label><input type="url" data-f="link" value="${esc(t.link)}" placeholder="https://open.spotify.com/…">
+    <label>Clip audio anteprima (opz.)</label>${uploadSlot('clip', t.clip, '♪', true)}
+  </div>`;
+  div.querySelector('[data-act="del"]').onclick = () => askDelete('track', i);
+  div.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { syncOpenTrack(); updateDirtyUI(); }));
+  wireUpload(div, 'cover', i, 'track');
+  wireUpload(div, 'clip', i, 'track');
+  return div;
+}
+function syncOpenTrack() {
+  const card = document.querySelector('#tracks .card-open'); if (!card) return;
+  const i = +card.closest('.card').dataset.idx; const t = ST.tracks[i]; if (!t) return;
+  const g = f => { const el = card.querySelector(`[data-f="${f}"]`); return el ? el.value.trim() : (t[f] || ''); };
+  t.title = g('title'); t.label = g('label'); t.date = g('date'); t.link = g('link');
+}
+function serializeTracks() {
+  syncOpenTrack();
+  return ST.tracks.filter(t => t.title).map(t => {
+    const o = { title: t.title }; if (t.id) o.id = t.id;
+    if (t.label) o.label = t.label; if (t.date) o.date = t.date;
+    if (t.cover) o.cover = t.cover; if (t.link) o.link = t.link; if (t.clip) o.clip = t.clip;
+    return o;
+  });
+}
+$('addTrack').onclick = () => { syncOpenTrack(); ST.tracks.push({ title: '' }); expTrk = ST.tracks.length - 1; renderTracks(); updateDirtyUI(); };
+
+// ================= UPLOAD SLOT (shared) =================
+function uploadSlot(field, url, ph, audio) {
+  const has = !!url;
+  const thumb = audio
+    ? `<div class="thumb">${has ? '♪' : ph}</div>`
+    : `<div class="thumb">${has ? `<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit" onerror="this.replaceWith(document.createTextNode('IMG'))">` : ph}</div>`;
+  return `<div class="upl" data-slot="${field}">${thumb}
+    <div class="upl-info">
+      <div class="upl-name">${has ? (audio ? 'clip caricata' : 'immagine caricata') : (audio ? 'nessuna clip' : 'nessuna immagine')}</div>
+      <div class="upl-actions">
+        <button class="filebtn">${has ? 'Cambia' : 'Carica'}<input type="file" accept="${audio ? 'audio/*' : 'image/*'}" data-up="${field}"></button>
+        ${has ? '<button class="rm" data-rm>Rimuovi</button>' : ''}
+      </div>
+      <div class="progress" data-prog style="display:none"><i></i></div>
+    </div></div>`;
+}
+function wireUpload(card, field, idx, kind) {
+  const slot = card.querySelector(`.upl[data-slot="${field}"]`); if (!slot) return;
+  const obj = kind === 'event' ? ST.events[idx] : ST.tracks[idx];
+  const inp = slot.querySelector(`[data-up="${field}"]`);
+  const prog = slot.querySelector('[data-prog]');
+  if (inp) inp.onchange = async (ev) => {
+    const file = ev.target.files[0]; if (!file) return;
+    kind === 'event' ? syncOpenEvent() : syncOpenTrack();
+    prog.style.display = 'block';
+    try { obj[field] = await uploadFile(file); (kind === 'event' ? renderEvents : renderTracks)(); updateDirtyUI(); toast(field === 'clip' ? 'Clip caricata' : 'Immagine caricata'); }
+    catch (err) { prog.style.display = 'none'; toast('Errore upload: ' + err.message, true); }
+  };
+  const rm = slot.querySelector('[data-rm]');
+  if (rm) rm.onclick = () => { kind === 'event' ? syncOpenEvent() : syncOpenTrack(); obj[field] = ''; (kind === 'event' ? renderEvents : renderTracks)(); updateDirtyUI(); };
+}
+
+// ================= FOTO =================
+function fotoSlot(key, label, cls) {
+  const url = (ST.content.photos || {})[key];
+  return `<label>${label}</label>
+    <div class="upl ${cls || ''}" data-slot="${key}">
+      <div class="thumb">${url ? `<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit" onerror="this.replaceWith(document.createTextNode('IMG'))">` : 'IMG'}</div>
+      <div class="upl-info"><div class="upl-name">${url ? 'immagine attuale' : 'nessuna immagine'}</div>
+        <div class="upl-actions"><button class="filebtn">${url ? 'Cambia' : 'Carica'}<input type="file" accept="image/*" data-pfoto="${key}"></button>${url ? '<button class="rm" data-rmf="' + key + '">Rimuovi</button>' : ''}</div>
+        <div class="progress" data-prog style="display:none"><i></i></div>
+      </div></div>`;
+}
+function renderFoto() {
+  $('fotoSlots').innerHTML = fotoSlot('profile', 'Foto profilo', 'circle') + fotoSlot('hero', 'Sfondo / anteprima social') + fotoSlot('backdrop', 'Sfondo desktop');
+  document.querySelectorAll('[data-pfoto]').forEach(inp => inp.onchange = async (ev) => {
+    const file = ev.target.files[0]; if (!file) return;
+    const key = inp.dataset.pfoto; const prog = inp.closest('.upl').querySelector('[data-prog]'); prog.style.display = 'block';
+    try { ST.content.photos = ST.content.photos || {}; ST.content.photos[key] = await uploadFile(file); renderFoto(); updateDirtyUI(); toast('Immagine caricata'); }
+    catch (err) { prog.style.display = 'none'; toast('Errore upload: ' + err.message, true); }
+  });
+  document.querySelectorAll('[data-rmf]').forEach(b => b.onclick = () => { ST.content.photos = ST.content.photos || {}; ST.content.photos[b.dataset.rmf] = ''; renderFoto(); updateDirtyUI(); });
+}
+
+// ================= CONTENT (link/booking) =================
+function fillContent() {
+  const l = ST.content.links || {}, b = ST.content.booking || {};
+  setV('c-tagline', ST.content.tagline); setV('c-youtube', l.youtube); setV('c-spotify', l.spotify);
+  setV('c-soundcloud', l.soundcloud); setV('c-tiktok', l.tiktok); setV('c-instagram', l.instagram);
+  setV('c-instagramHandle', l.instagramHandle); setV('c-email', b.email);
+  renderFoto();
+}
+function gatherContent() {
+  ST.content.tagline = gv('c-tagline');
+  ST.content.links = { youtube: gv('c-youtube'), spotify: gv('c-spotify'), soundcloud: gv('c-soundcloud'),
+    tiktok: gv('c-tiktok'), instagram: gv('c-instagram'), instagramHandle: gv('c-instagramHandle') };
+  ST.content.booking = { email: gv('c-email') };
+  ST.content.photos = ST.content.photos || {};
+}
+function setV(id, v) { const el = $(id); if (el && v != null) el.value = v; }
+function gv(id) { const el = $(id); return el ? el.value.trim() : ''; }
+['c-tagline','c-youtube','c-spotify','c-soundcloud','c-tiktok','c-instagram','c-instagramHandle','c-email'].forEach(id => {
+  document.addEventListener('input', e => { if (e.target.id === id) { gatherContent(); updateDirtyUI(); } });
+});
+
+// ================= TABS / EXIT GUARD =================
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+  window.scrollTo(0, 0);
+  updateDirtyUI();
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  const target = t.dataset.tab; if (target === activeTab) return;
+  if (DOMAIN[activeTab] && DOMAIN[activeTab] !== DOMAIN[target] && dirtyOf(activeTab) > 0) {
+    pendingTab = target; $('exitModal').classList.add('show');
+  } else switchTab(target);
+}));
+$('exitDiscard').onclick = () => {
+  const d = DOMAIN[activeTab]; if (d) { ST[d] = clone(BASE[d]); reRenderDomain(d); }
+  $('exitModal').classList.remove('show'); if (pendingTab) { switchTab(pendingTab); pendingTab = null; }
+};
+$('exitSave').onclick = async () => { $('exitModal').classList.remove('show'); await doSave(); if (pendingTab) { switchTab(pendingTab); pendingTab = null; } };
+function reRenderDomain(d) {
+  if (d === 'events') renderEvents(); else if (d === 'tracks') renderTracks(); else fillContent();
+}
+
+// ================= DELETE CONFIRM =================
+function askDelete(kind, idx) {
+  delCtx = { kind, idx };
+  if (kind === 'event') { $('delTitle').textContent = "Eliminare l'evento?"; $('delBody').textContent = 'La data verrà rimossa. L\'azione non è annullabile.'; }
+  else { $('delTitle').textContent = 'Eliminare la traccia?'; $('delBody').textContent = 'La traccia verrà rimossa. L\'azione non è annullabile.'; }
+  $('delModal').classList.add('show');
+}
+$('delCancel').onclick = () => { $('delModal').classList.remove('show'); delCtx = null; };
+$('delOk').onclick = () => {
+  if (!delCtx) return;
+  if (delCtx.kind === 'event') { ST.events.splice(delCtx.idx, 1); expDate = 0; renderEvents(); }
+  else { ST.tracks.splice(delCtx.idx, 1); expTrk = 0; renderTracks(); }
+  $('delModal').classList.remove('show'); delCtx = null; updateDirtyUI();
+};
+
+// ================= PREVIEW =================
+$('previewBtn').onclick = () => { const f = $('previewFrame'); if (!f.src) f.src = SITE_URL + '?t=' + Date.now(); $('preview').classList.add('show'); };
+$('closePreview').onclick = () => $('preview').classList.remove('show');
+
+// ================= SAVE / UNLOAD =================
+$('saveBtn').onclick = doSave;
+window.addEventListener('beforeunload', e => { if (anyDirty()) { e.preventDefault(); e.returnValue = ''; } });
+
+// ================= INIT =================
+function setStatus(s, txt) { $('status').className = 'status ' + s; $('statusTxt').textContent = txt; }
+async function boot() {
+  try {
+    const [ev, ct, tr] = await Promise.all([
+      api('/api/events').catch(() => []),
+      api('/api/content').catch(() => ({})),
+      api('/api/tracks').catch(() => []),
+    ]);
+    ST.events = Array.isArray(ev) ? ev : [];
+    ST.content = ct && typeof ct === 'object' ? ct : {};
+    ST.tracks = Array.isArray(tr) ? tr : [];
+    BASE.events = clone(ST.events); BASE.content = clone(ST.content); BASE.tracks = clone(ST.tracks);
+    renderEvents(); renderTracks(); fillContent();
+    setStatus('ready', 'pronto'); updateDirtyUI();
+  } catch (err) {
+    setStatus('error', 'errore'); toast('Errore di caricamento: ' + err.message, true);
+  }
+}
+
+// ================= ACCESSO =================
+// La password non sta nel codice: viene chiesta all'apertura e tenuta
+// nella sessione del browser, quindi sparisce quando si chiude la scheda.
+const TOKEN_KEY = 'antitesi_admin';
+
+async function tokenValido(t) {
+  if (!t) return false;
+  try {
+    const r = await fetch('/api/auth', { headers: { Authorization: 'Bearer ' + t }, cache: 'no-store' });
+    return r.ok;
+  } catch (_) {
+    return false;
+  }
+}
+
+(async function accesso() {
+  const gate = document.getElementById('gate');
+  const form = document.getElementById('gateForm');
+  const pwd = document.getElementById('gatePwd');
+  const btn = document.getElementById('gateBtn');
+  const err = document.getElementById('gateErr');
+
+  const salvato = sessionStorage.getItem(TOKEN_KEY) || '';
+  if (await tokenValido(salvato)) {
+    TOKEN = salvato;
+    boot();
+    return;
+  }
+  sessionStorage.removeItem(TOKEN_KEY);
+
+  gate.hidden = false;
+  pwd.focus();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const val = pwd.value.trim();
+    if (!val) return;
+    btn.disabled = true;
+    btn.textContent = 'Verifico…';
+    err.textContent = '';
+
+    if (await tokenValido(val)) {
+      sessionStorage.setItem(TOKEN_KEY, val);
+      TOKEN = val;
+      gate.hidden = true;
+      boot();
+      return;
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Entra';
+    err.textContent = 'Password non valida';
+    pwd.select();
+  });
+})();
+
+</script>
+</body>
+</html>

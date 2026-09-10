@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pannello · Antitesi</title>
+<style>
+  :root {
+    --bg: #0a0a0b; --surface: #141416; --surface-2: #1c1c20;
+    --border: #2a2a30; --text: #f4f4f5; --muted: #9a9aa2;
+    --accent: #e8a03f; --accent-soft: #c98a36; --danger: #e0564b;
+    --radius: 14px; --radius-sm: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 20px 16px 80px; }
+  header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  header.top h1 { font-size: 20px; margin: 0; letter-spacing: 0.04em; }
+  header.top .sub { font-size: 12px; color: var(--muted); }
+
+  .tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 18px; padding-bottom: 4px; }
+  .tab { flex: 0 0 auto; padding: 9px 14px; border: 1px solid var(--border); background: var(--surface);
+         color: var(--muted); border-radius: 999px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .tab.active { background: var(--accent); color: #1a1206; border-color: var(--accent); font-weight: 600; }
+
+  section.panel { display: none; }
+  section.panel.active { display: block; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+          padding: 14px; margin-bottom: 14px; }
+  .card h3 { margin: 0 0 12px; font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent-soft); }
+
+  label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 5px; }
+  input[type=text], input[type=date], input[type=email], input[type=url], textarea {
+    width: 100%; padding: 11px 12px; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text); font-size: 15px; font-family: inherit;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 70px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 460px) { .row2 { grid-template-columns: 1fr; } }
+
+  .check { display: flex; align-items: center; gap: 8px; margin: 12px 0; color: var(--text); font-size: 14px; cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+  button { font-family: inherit; cursor: pointer; }
+  .btn { padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--accent);
+         background: var(--accent); color: #1a1206; font-size: 14px; font-weight: 600; }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger);
+                padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; }
+  .btn-add { width: 100%; padding: 14px; background: transparent; border: 1px dashed var(--border);
+             color: var(--accent); border-radius: var(--radius); font-size: 14px; margin-bottom: 14px; }
+  .actions { position: sticky; bottom: 0; background: linear-gradient(180deg, transparent, var(--bg) 30%);
+             padding: 14px 0 4px; display: flex; gap: 10px; }
+  .actions .btn { flex: 1; }
+
+  .ev-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .ev-head .num { font-size: 12px; color: var(--muted); }
+
+  .thumb { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+  .thumb img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); }
+  .filebtn { position: relative; overflow: hidden; display: inline-block; }
+  .filebtn input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  .hint { font-size: 12px; color: var(--muted); margin: 4px 0 0; line-height: 1.4; }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+           background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+           padding: 12px 18px; border-radius: 999px; font-size: 14px; opacity: 0; transition: all .25s;
+           pointer-events: none; z-index: 50; max-width: 90%; text-align: center; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.err { border-color: var(--danger); color: #ffd9d4; }
+  .loading { color: var(--muted); font-size: 14px; padding: 30px 0; text-align: center; }
+  .preview-link { display: inline-block; margin-top: 6px; font-size: 12px; color: var(--accent); }
+  .guide p { font-size: 14px; line-height: 1.55; color: var(--text); margin: 0 0 14px; }
+  .guide h4 { font-size: 14px; margin: 22px 0 8px; color: var(--accent); }
+  .guide ol { margin: 0 0 12px; padding-left: 20px; }
+  .guide li { font-size: 14px; line-height: 1.5; color: var(--text); margin-bottom: 6px; }
+  .guide strong { color: #fff; }
+  .guide em { color: var(--accent-soft); font-style: normal; }
+  .guide .hint { font-size: 13px; }
+</style>
+</head>
+<body>
+<style>
+  .gate { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center;
+          justify-content: center; padding: 24px; background: #050505; }
+  .gate[hidden] { display: none; }
+  .gate-box { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px;
+              font-family: var(--font-body, system-ui, sans-serif); }
+  .gate-title { margin: 0 0 4px; text-align: center; color: #8a8278;
+                font-family: var(--font-mono, ui-monospace, monospace);
+                font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; }
+  .gate-box input { width: 100%; padding: 14px 16px; font-size: 16px; color: #f5f1ea;
+                    background: #0f0f0f; border: 1px solid #1f1f1f; border-radius: 12px; }
+  .gate-box input:focus { outline: 2px solid #e8a03f; outline-offset: 2px; }
+  .gate-box button { width: 100%; padding: 14px 16px; font-size: 15px; font-weight: 700;
+                     color: #000; background: #e8a03f; border: 0; border-radius: 12px; cursor: pointer; }
+  .gate-box button[disabled] { opacity: 0.6; cursor: default; }
+  .gate-err { margin: 0; min-height: 18px; text-align: center; color: #e06b5a; font-size: 13px; }
+</style>
+
+<div class="gate" id="gate" hidden>
+  <form class="gate-box" id="gateForm">
+    <p class="gate-title">Pannello Antitesi</p>
+    <input type="password" id="gatePwd" placeholder="Password" autocomplete="current-password" required>
+    <button type="submit" id="gateBtn">Entra</button>
+    <p class="gate-err" id="gateErr" role="alert"></p>
+  </form>
+</div>
+
+<div class="wrap">
+  <header class="top">
+    <h1>ANTITESI · Pannello</h1>
+    <span class="sub" id="status">carico…</span>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="date">Date</button>
+    <button class="tab" data-tab="foto">Foto</button>
+    <button class="tab" data-tab="link">Link</button>
+    <button class="tab" data-tab="booking">Booking</button>
+    <button class="tab" data-tab="tracce">Tracce</button>
+    <button class="tab" data-tab="guida">Guida</button>
+  </div>
+
+  <!-- DATE -->
+  <section class="panel active" id="panel-date">
+    <p class="hint">Aggiungi, modifica o elimina le date. Per un periodo (es. una residency) attiva “Fascia di date” e imposta inizio e fine. Ricordati di salvare.</p>
+    <div id="events"></div>
+    <button class="btn-add" id="addEvent">+ Aggiungi data</button>
+    <div class="actions"><button class="btn" id="saveEvents">Salva date</button></div>
+  </section>
+
+  <!-- FOTO -->
+  <section class="panel" id="panel-foto">
+    <div class="card">
+      <h3>Foto del sito</h3>
+      <p class="hint">Le immagini vengono ridimensionate automaticamente. Lascia vuoto per tenere quella attuale.</p>
+      <div id="photo-profile"></div>
+      <div id="photo-backdrop"></div>
+      <div id="photo-hero"></div>
+    </div>
+    <div class="actions"><button class="btn" id="saveContent1">Salva contenuti</button></div>
+  </section>
+
+  <!-- LINK -->
+  <section class="panel" id="panel-link">
+    <div class="card">
+      <h3>Link & social</h3>
+      <label>Tagline (sotto il nome)</label>
+      <input type="text" id="c-tagline" placeholder="DJ &amp; Producer">
+      <label>YouTube</label><input type="url" id="c-youtube" placeholder="https://...">
+      <label>Spotify (artista)</label><input type="url" id="c-spotify" placeholder="https://...">
+      <label>SoundCloud</label><input type="url" id="c-soundcloud" placeholder="https://...">
+      <label>TikTok</label><input type="url" id="c-tiktok" placeholder="https://...">
+      <label>Instagram (link)</label><input type="url" id="c-instagram" placeholder="https://instagram.com/...">
+      <label>Instagram (testo mostrato)</label><input type="text" id="c-instagramHandle" placeholder="@danceintoparadise">
+    </div>
+    <div class="actions"><button class="btn" id="saveContent2">Salva contenuti</button></div>
+  </section>
+
+  <!-- BOOKING -->
+  <section class="panel" id="panel-booking">
+    <div class="card">
+      <h3>Booking</h3>
+      <label>Email per il booking</label>
+      <input type="email" id="c-email" placeholder="contactantitesi@gmail.com">
+      <p class="hint">Usata nel pulsante “Scrivi ad Antitesi” e mostrata sotto.</p>
+    </div>
+    <div class="actions"><button class="btn" id="saveContent3">Salva contenuti</button></div>
+  </section>
+
+  <!-- TRACCE -->
+  <section class="panel" id="panel-tracce">
+    <p class="hint">Le tue uscite musicali. Aggiungi una traccia quando esce, modifica o elimina quelle esistenti. La più recente (per data) compare in evidenza nella sezione “Ascolta”. Ricordati di salvare.</p>
+    <div id="tracks"></div>
+    <button class="btn-add" id="addTrack">+ Aggiungi traccia</button>
+    <div class="actions"><button class="btn" id="saveTracks">Salva tracce</button></div>
+  </section>
+
+  <!-- GUIDA -->
+  <section class="panel" id="panel-guida">
+    <div class="card guide">
+      <h3>Come funziona</h3>
+      <p>Questo è il tuo pannello: da qui aggiorni il sito da solo, dal telefono. Le modifiche vanno online in pochi secondi. <strong>Ogni scheda ha il suo tasto “Salva” in basso: premilo sempre dopo aver modificato.</strong></p>
+
+      <h4>📅 Aggiungere una data</h4>
+      <ol>
+        <li>Scheda <strong>Date</strong> → <strong>+ Aggiungi data</strong>.</li>
+        <li>Metti la data, il locale e la città (con la provincia tra parentesi, es. <em>Roma (RM)</em>).</li>
+        <li>Per un periodo (es. una residency) attiva <strong>“Fascia di date”</strong> e imposta inizio e fine.</li>
+        <li>Se vuoi, carica la <strong>locandina</strong> e i link Instagram/TikTok.</li>
+        <li>Premi <strong>Salva date</strong>. Le date si ordinano da sole.</li>
+      </ol>
+      <p class="hint">Per modificare o cancellare: cambia i campi o usa <strong>Elimina</strong>, poi <strong>Salva date</strong>. Le date passate spariscono da sole dal sito.</p>
+
+      <h4>🎵 Aggiungere una traccia / uscita</h4>
+      <ol>
+        <li>Scheda <strong>Tracce</strong> → <strong>+ Aggiungi traccia</strong>.</li>
+        <li>Titolo, etichetta (es. <em>Out now</em>), data d’uscita.</li>
+        <li>Carica la <strong>copertina</strong>, incolla il <strong>link Spotify</strong> e (se vuoi) una <strong>clip audio</strong> d’anteprima.</li>
+        <li>Premi <strong>Salva tracce</strong>. La più recente finisce in evidenza nella sezione “Ascolta”.</li>
+      </ol>
+
+      <h4>📷 Foto · 🔗 Link · ✉️ Booking</h4>
+      <p>Nelle schede <strong>Foto</strong>, <strong>Link</strong> e <strong>Booking</strong> trovi già i valori attuali. Cambia quello che vuoi e premi <strong>Salva contenuti</strong>. Le immagini si ridimensionano da sole.</p>
+
+      <h4>⚠️ Importante</h4>
+      <p>Il link di questo pannello è <strong>segreto</strong>: tienilo per te e non condividerlo. Chi ha il link può modificare il sito.</p>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let TOKEN = '';   // valorizzato dall'accesso, mai scritto nel codice
+
+async function api(path, method='GET', body) {
+  const opt = { method, headers: {} };
+  if (body !== undefined) { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
+  if (method !== 'GET') opt.headers['Authorization'] = 'Bearer ' + TOKEN;
+  const r = await fetch(path, opt);
+  if (!r.ok) { let e; try { e = (await r.json()).error; } catch (_) {} throw new Error(e || ('HTTP ' + r.status)); }
+  return r.json();
+}
+
+let toastT;
+function toast(msg, isErr) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(toastT); toastT = setTimeout(() => el.className = 'toast', 2600);
+}
+
+// ---------- image / file helpers ----------
+function readDataUrl(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+}
+function loadImg(src) {
+  return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+}
+async function toUploadDataUrl(file, maxDim = 1600, q = 0.82) {
+  if (!file.type.startsWith('image/')) return readDataUrl(file);
+  const img = await loadImg(await readDataUrl(file));
+  let w = img.width, h = img.height;
+  if (Math.max(w, h) > maxDim) { const s = maxDim / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); }
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(img, 0, 0, w, h);
+  return c.toDataURL('image/jpeg', q);
+}
+async function uploadFile(file) {
+  const dataUrl = await toUploadDataUrl(file);
+  const r = await api('/api/upload', 'POST', { filename: file.name, dataUrl });
+  return r.url;
+}
+
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+}));
+
+// ================= EVENTS =================
+let events = [];
+
+function byDateAsc(a, b) { if (a.date && b.date) return new Date(a.date) - new Date(b.date); if (a.date) return -1; if (b.date) return 1; return 0; }
+function byDateDesc(a, b) { if (a.date && b.date) return new Date(b.date) - new Date(a.date); if (a.date) return -1; if (b.date) return 1; return 0; }
+
+function eventRow(e, i) {
+  const isRange = !!e.endDate;
+  const wrap = document.createElement('div');
+  wrap.className = 'card';
+  wrap.innerHTML = `
+    <div class="ev-head">
+      <span class="num">Data #${i + 1}</span>
+      <button class="btn-danger" data-act="del">Elimina</button>
+    </div>
+    <label class="check"><input type="checkbox" data-f="range" ${isRange ? 'checked' : ''}> Fascia di date (da–a)</label>
+    <div class="row2">
+      <div><label>${isRange ? 'Data inizio' : 'Data'}</label><input type="date" data-f="date" value="${e.date || ''}"></div>
+      <div data-end style="${isRange ? '' : 'display:none'}"><label>Data fine</label><input type="date" data-f="endDate" value="${e.endDate || ''}"></div>
+    </div>
+    <label>Locale</label><input type="text" data-f="venue" value="${esc(e.venue)}" placeholder="Es. Singita">
+    <label>Titolo evento (facoltativo)</label><input type="text" data-f="title" value="${esc(e.title)}" placeholder="Solo se diverso dal locale">
+    <label>Città (con provincia)</label><input type="text" data-f="city" value="${esc(e.city)}" placeholder="Es. Monte Argentario (GR)">
+    <label>Locandina</label>
+    <div class="thumb">
+      <img data-poster src="${e.poster || ''}" alt="" onerror="this.style.visibility='hidden'">
+      <span class="btn-ghost btn filebtn" style="padding:9px 14px">Carica<input type="file" accept="image/*" data-f="posterFile"></span>
+      ${e.poster ? '<button class="btn-danger" data-act="delposter">Rimuovi</button>' : ''}
+    </div>
+    <div class="row2">
+      <div><label>Link Instagram</label><input type="url" data-f="ig_link" value="${esc(e.ig_link)}" placeholder="https://..."></div>
+      <div><label>Link TikTok</label><input type="url" data-f="tiktok_link" value="${esc(e.tiktok_link)}" placeholder="https://..."></div>
+    </div>`;
+
+  wrap.querySelector('[data-act="del"]').onclick = () => { events.splice(i, 1); renderEvents(); };
+  const dp = wrap.querySelector('[data-act="delposter"]');
+  if (dp) dp.onclick = () => { collect(); events[i].poster = ''; renderEvents(); };
+
+  wrap.querySelector('[data-f="range"]').onchange = (ev) => {
+    wrap.querySelector('[data-end]').style.display = ev.target.checked ? '' : 'none';
+    if (!ev.target.checked) wrap.querySelector('[data-f="endDate"]').value = '';
+  };
+
+  wrap.querySelector('[data-f="posterFile"]').onchange = async (ev) => {
+    const file = ev.target.files[0]; if (!file) return;
+    try { toast('Carico locandina…'); collect(); events[i].poster = await uploadFile(file); renderEvents(); toast('Locandina caricata'); }
+    catch (err) { toast('Errore upload: ' + err.message, true); }
+  };
+  return wrap;
+}
+
+function renderEvents() {
+  events.sort(byDateAsc);
+  const c = document.getElementById('events');
+  c.innerHTML = '';
+  if (!events.length) c.innerHTML = '<p class="hint">Nessuna data. Aggiungine una qui sotto.</p>';
+  events.forEach((e, i) => c.appendChild(eventRow(e, i)));
+}
+
+function collect() {
+  document.querySelectorAll('#events > .card').forEach((card, i) => {
+    if (!events[i]) return;
+    const g = f => { const el = card.querySelector(`[data-f="${f}"]`); return el ? el.value.trim() : ''; };
+    const range = card.querySelector('[data-f="range"]').checked;
+    events[i].date = g('date');
+    events[i].endDate = range ? g('endDate') : '';
+    events[i].venue = g('venue');
+    events[i].title = g('title');
+    events[i].city = g('city');
+    events[i].ig_link = g('ig_link');
+    events[i].tiktok_link = g('tiktok_link');
+    // poster kept on the object
+  });
+}
+
+document.getElementById('addEvent').onclick = () => { collect(); events.push({ date: '' }); renderEvents(); };
+
+document.getElementById('saveEvents').onclick = async () => {
+  collect();
+  const payload = events.filter(e => e.date).map(e => {
+    const o = { date: e.date };
+    if (e.endDate) o.endDate = e.endDate;
+    if (e.title) o.title = e.title;
+    if (e.venue) o.venue = e.venue;
+    if (e.city) o.city = e.city;
+    if (e.poster) o.poster = e.poster;
+    if (e.ig_link) o.ig_link = e.ig_link;
+    if (e.tiktok_link) o.tiktok_link = e.tiktok_link;
+    return o;
+  });
+  try { const r = await api('/api/events', 'POST', payload); toast(`Salvate ${r.count} date ✓`); }
+  catch (err) { toast('Errore: ' + err.message, true); }
+};
+
+// ================= CONTENT (foto / link / booking / zaya) =================
+let content = {};
+
+function photoField(key, title) {
+  return `<label>${title}</label>
+    <div class="thumb">
+      <img data-pimg="${key}" src="" alt="" onerror="this.style.visibility='hidden'">
+      <span class="btn-ghost btn filebtn" style="padding:9px 14px">Carica<input type="file" accept="image/*" data-pfile="${key}"></span>
+    </div>`;
+}
+
+function setupPhotos() {
+  document.getElementById('photo-profile').innerHTML = photoField('profile', 'Foto profilo');
+  document.getElementById('photo-backdrop').innerHTML = photoField('backdrop', 'Sfondo (desktop)');
+  document.getElementById('photo-hero').innerHTML = photoField('hero', 'Immagine anteprima social (Open Graph)');
+
+  document.querySelectorAll('[data-pfile]').forEach(inp => inp.onchange = async (ev) => {
+    const file = ev.target.files[0]; if (!file) return;
+    const key = inp.dataset.pfile;
+    try {
+      toast('Carico immagine…');
+      const url = await uploadFile(file);
+      content.photos = content.photos || {}; content.photos[key] = url;
+      const img = document.querySelector(`[data-pimg="${key}"]`); img.src = url; img.style.visibility = 'visible';
+      toast('Immagine caricata');
+    } catch (err) { toast('Errore upload: ' + err.message, true); }
+  });
+}
+
+function fillContent() {
+  const p = content.photos || {}, l = content.links || {}, b = content.booking || {};
+  ['profile', 'backdrop', 'hero'].forEach(k => {
+    const img = document.querySelector(`[data-pimg="${k}"]`);
+    if (img && p[k]) { img.src = p[k]; img.style.visibility = 'visible'; }
+  });
+  val('c-tagline', content.tagline);
+  val('c-youtube', l.youtube); val('c-spotify', l.spotify); val('c-soundcloud', l.soundcloud);
+  val('c-tiktok', l.tiktok); val('c-instagram', l.instagram); val('c-instagramHandle', l.instagramHandle);
+  val('c-email', b.email);
+}
+
+function gatherContent() {
+  content.tagline = v('c-tagline');
+  content.links = {
+    youtube: v('c-youtube'), spotify: v('c-spotify'), soundcloud: v('c-soundcloud'),
+    tiktok: v('c-tiktok'), instagram: v('c-instagram'), instagramHandle: v('c-instagramHandle'),
+  };
+  content.booking = { email: v('c-email') };
+  content.photos = content.photos || {};
+  return content;
+}
+
+async function saveContent() {
+  try { await api('/api/content', 'POST', gatherContent()); toast('Contenuti salvati ✓'); }
+  catch (err) { toast('Errore: ' + err.message, true); }
+}
+['saveContent1', 'saveContent2', 'saveContent3'].forEach(id =>
+  document.getElementById(id).onclick = saveContent);
+
+// ================= TRACCE =================
+let tracks = [];
+
+function trackRow(tr, i) {
+  const wrap = document.createElement('div');
+  wrap.className = 'card';
+  wrap.innerHTML = `
+    <div class="ev-head">
+      <span class="num">Traccia #${i + 1}</span>
+      <button class="btn-danger" data-act="del">Elimina</button>
+    </div>
+    <label>Titolo</label><input type="text" data-f="title" value="${esc(tr.title)}" placeholder="Es. Zaya">
+    <div class="row2">
+      <div><label>Etichetta (badge)</label><input type="text" data-f="label" value="${esc(tr.label)}" placeholder="Es. Out now"></div>
+      <div><label>Data uscita</label><input type="date" data-f="date" value="${tr.date || ''}"></div>
+    </div>
+    <label>Copertina</label>
+    <div class="thumb">
+      <img data-cover src="${tr.cover || ''}" alt="" onerror="this.style.visibility='hidden'">
+      <span class="btn-ghost btn filebtn" style="padding:9px 14px">Carica<input type="file" accept="image/*" data-f="coverFile"></span>
+      ${tr.cover ? '<button class="btn-danger" data-act="delcover">Rimuovi</button>' : ''}
+    </div>
+    <label>Link streaming (Spotify, ecc.)</label>
+    <input type="url" data-f="link" value="${esc(tr.link)}" placeholder="https://open.spotify.com/...">
+    <label>Clip audio anteprima (facoltativa)</label>
+    <div class="thumb">
+      <span class="hint" data-clipname>${tr.clip ? 'clip caricata ✓' : 'nessuna clip'}</span>
+      <span class="btn-ghost btn filebtn" style="padding:9px 14px">Carica<input type="file" accept="audio/*" data-f="clipFile"></span>
+      ${tr.clip ? '<button class="btn-danger" data-act="delclip">Rimuovi</button>' : ''}
+    </div>`;
+
+  wrap.querySelector('[data-act="del"]').onclick = () => { tracks.splice(i, 1); renderTracks(); };
+  const dc = wrap.querySelector('[data-act="delcover"]');
+  if (dc) dc.onclick = () => { collectTracks(); tracks[i].cover = ''; renderTracks(); };
+  const dcl = wrap.querySelector('[data-act="delclip"]');
+  if (dcl) dcl.onclick = () => { collectTracks(); tracks[i].clip = ''; renderTracks(); };
+
+  wrap.querySelector('[data-f="coverFile"]').onchange = async (ev) => {
+    const file = ev.target.files[0]; if (!file) return;
+    try { toast('Carico copertina…'); collectTracks(); tracks[i].cover = await uploadFile(file); renderTracks(); toast('Copertina caricata'); }
+    catch (err) { toast('Errore upload: ' + err.message, true); }
+  };
+  wrap.querySelector('[data-f="clipFile"]').onchange = async (ev) => {
+    const file = ev.target.files[0]; if (!file) return;
+    try { toast('Carico clip…'); collectTracks(); tracks[i].clip = await uploadFile(file); renderTracks(); toast('Clip caricata'); }
+    catch (err) { toast('Errore upload: ' + err.message, true); }
+  };
+  return wrap;
+}
+
+function renderTracks() {
+  tracks.sort(byDateDesc);
+  const c = document.getElementById('tracks');
+  c.innerHTML = '';
+  if (!tracks.length) c.innerHTML = '<p class="hint">Nessuna traccia. Aggiungine una qui sotto.</p>';
+  tracks.forEach((tr, i) => c.appendChild(trackRow(tr, i)));
+}
+
+function collectTracks() {
+  document.querySelectorAll('#tracks > .card').forEach((card, i) => {
+    if (!tracks[i]) return;
+    const g = f => { const el = card.querySelector(`[data-f="${f}"]`); return el ? el.value.trim() : ''; };
+    tracks[i].title = g('title');
+    tracks[i].label = g('label');
+    tracks[i].date = g('date');
+    tracks[i].link = g('link');
+    // cover & clip kept on the object
+  });
+}
+
+document.getElementById('addTrack').onclick = () => { collectTracks(); tracks.push({ title: '' }); renderTracks(); };
+
+document.getElementById('saveTracks').onclick = async () => {
+  collectTracks();
+  const payload = tracks.filter(tr => tr.title).map(tr => {
+    const o = { title: tr.title };
+    if (tr.id) o.id = tr.id;
+    if (tr.label) o.label = tr.label;
+    if (tr.date) o.date = tr.date;
+    if (tr.cover) o.cover = tr.cover;
+    if (tr.link) o.link = tr.link;
+    if (tr.clip) o.clip = tr.clip;
+    return o;
+  });
+  try { const r = await api('/api/tracks', 'POST', payload); toast(`Salvate ${r.count} tracce ✓`); }
+  catch (err) { toast('Errore: ' + err.message, true); }
+};
+
+// ---------- small dom helpers ----------
+function esc(s) { return (s == null ? '' : String(s)).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function val(id, v) { const el = document.getElementById(id); if (el && v != null) el.value = v; }
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+// ================= INIT =================
+async function boot() {
+  try {
+    const [ev, ct, tr] = await Promise.all([
+      api('/api/events').catch(() => []),
+      api('/api/content').catch(() => ({})),
+      api('/api/tracks').catch(() => []),
+    ]);
+    events = Array.isArray(ev) ? ev : [];
+    content = ct && typeof ct === 'object' ? ct : {};
+    tracks = Array.isArray(tr) ? tr : [];
+    renderEvents();
+    setupPhotos();
+    fillContent();
+    renderTracks();
+    document.getElementById('status').textContent = 'pronto';
+  } catch (err) {
+    document.getElementById('status').textContent = 'errore';
+    toast('Errore di caricamento: ' + err.message, true);
+  }
+}
+
+// ================= ACCESSO =================
+// La password non sta nel codice: viene chiesta all'apertura e tenuta
+// nella sessione del browser, quindi sparisce quando si chiude la scheda.
+const TOKEN_KEY = 'antitesi_admin';
+
+async function tokenValido(t) {
+  if (!t) return false;
+  try {
+    const r = await fetch('/api/auth', { headers: { Authorization: 'Bearer ' + t }, cache: 'no-store' });
+    return r.ok;
+  } catch (_) {
+    return false;
+  }
+}
+
+(async function accesso() {
+  const gate = document.getElementById('gate');
+  const form = document.getElementById('gateForm');
+  const pwd = document.getElementById('gatePwd');
+  const btn = document.getElementById('gateBtn');
+  const err = document.getElementById('gateErr');
+
+  const salvato = sessionStorage.getItem(TOKEN_KEY) || '';
+  if (await tokenValido(salvato)) {
+    TOKEN = salvato;
+    boot();
+    return;
+  }
+  sessionStorage.removeItem(TOKEN_KEY);
+
+  gate.hidden = false;
+  pwd.focus();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const val = pwd.value.trim();
+    if (!val) return;
+    btn.disabled = true;
+    btn.textContent = 'Verifico…';
+    err.textContent = '';
+
+    if (await tokenValido(val)) {
+      sessionStorage.setItem(TOKEN_KEY, val);
+      TOKEN = val;
+      gate.hidden = true;
+      boot();
+      return;
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Entra';
+    err.textContent = 'Password non valida';
+    pwd.select();
+  });
+})();
+
+</script>
+</body>
+</html>

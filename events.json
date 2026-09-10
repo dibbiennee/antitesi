@@ -1,0 +1,34 @@
+[
+  {
+    "date": "2026-06-02",
+    "title": "Le Dune",
+    "venue": "Sant'Agostino",
+    "city": "Tarquinia (VT)"
+  },
+  {
+    "date": "2026-06-04",
+    "title": "Zuma",
+    "city": "Roma"
+  },
+  {
+    "date": "2026-06-07",
+    "title": "Zuma",
+    "city": "Roma"
+  },
+  {
+    "date": "2026-06-21",
+    "title": "Zuma",
+    "city": "Roma"
+  },
+  {
+    "date": "2026-06-28",
+    "venue": "Singita",
+    "city": "Monte Argentario (GR)"
+  },
+  {
+    "date": "2026-07-16",
+    "endDate": "2026-07-31",
+    "venue": "Zuma",
+    "city": "Porto Cervo (SS)"
+  }
+]

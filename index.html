@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<meta name="theme-color" content="#050505">
+
+<title>ANTITESI · DJ House · Roma</title>
+<meta name="description" content="Antitesi. DJ house da Roma. Set live, date in programma, contatti per booking.">
+
+<meta property="og:type" content="profile">
+<meta property="og:url" content="https://antitesi.vercel.app/">
+<meta property="og:title" content="ANTITESI · DJ House · Roma">
+<meta property="og:description" content="DJ house da Roma. Set live, date in programma, contatti per booking.">
+<meta property="og:image" content="https://antitesi.vercel.app/foto/hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ANTITESI · DJ House · Roma">
+<meta name="twitter:description" content="DJ house da Roma. Set live, date in programma, contatti per booking.">
+<meta name="twitter:image" content="https://antitesi.vercel.app/foto/hero.jpg">
+
+<link rel="icon" type="image/jpeg" href="/logo-antitesi.jpg">
+<link rel="canonical" href="https://antitesi.vercel.app/">
+
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=clash-display@600,700&display=swap" rel="stylesheet">
+<!-- JetBrains Mono non e' ospitato da Fontshare: va preso da Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "name": "Antitesi",
+  "genre": "House",
+  "url": "https://antitesi.vercel.app/",
+  "email": "contactantitesi@gmail.com",
+  "location": {
+    "@type": "Place",
+    "name": "Roma, Italia"
+  },
+  "sameAs": [
+    "https://www.youtube.com/@antitesi",
+    "https://open.spotify.com/artist/10C7ayGjYpyEgKZqymRcO5",
+    "https://on.soundcloud.com/EO870HYMi6QtEIxAwJ",
+    "https://www.tiktok.com/@antitesi"
+  ]
+}
+</script>
+
+<style>
+  :root {
+    --bg: #050505;
+    --surface: #0f0f0f;
+    --surface-hover: #161616;
+    --border: #1f1f1f;
+    --text: #f5f1ea;
+    --muted: #8a8278;
+    --accent: #e8a03f;
+    --accent-soft: #f2c373;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --container: 440px;
+
+    --font-display: "Clash Display", system-ui, sans-serif;
+    --font-body: "Satoshi", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(232, 160, 63, 0.08), transparent 60%),
+      radial-gradient(800px 400px at 50% 110%, rgba(232, 160, 63, 0.05), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 40px 20px 48px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* LANGUAGE SWITCHER */
+  .lang {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px;
+    z-index: 2;
+  }
+  .lang button {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease;
+  }
+  .lang button:hover { color: var(--text); }
+  .lang button.is-active {
+    background: var(--text);
+    color: #000;
+  }
+
+  /* HEADER */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  .profile {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 20px 40px -20px rgba(232, 160, 63, 0.3);
+  }
+  .profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 40%;
+    display: block;
+  }
+  .profile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(245, 241, 234, 0.06);
+    pointer-events: none;
+  }
+
+  .brand {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(38px, 11vw, 52px);
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    margin: 6px 0 0;
+  }
+
+  /* logo: altezza legata alla maiuscola del titolo, cosi scala come il testo */
+  .brand-mark {
+    display: block;
+    margin: 0 auto;
+    height: 0.93em;
+    width: auto;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .tagline {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+  .live-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* DIVIDER LABEL */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .section-label::before,
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 36px;
+  }
+
+  /* PLATFORM BUTTONS */
+  .platforms {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .platform {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 15px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -0.005em;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .platform .icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .platform .icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .platform .label {
+    flex: 1;
+    text-align: left;
+  }
+  .platform .arrow {
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+    transition: color 150ms ease, transform 200ms ease;
+  }
+  .platform:hover,
+  .platform:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    transform: translateY(-1px);
+  }
+  .platform:hover .arrow,
+  .platform:focus-visible .arrow {
+    color: #000;
+    transform: translate(2px, -2px);
+  }
+  .platform:active {
+    transform: translateY(0);
+  }
+
+  /* Featured release pill (cover + Out now) */
+  .platform--featured {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(232, 160, 63, 0.12) 0%, rgba(232, 160, 63, 0.04) 100%);
+    border: 1px solid rgba(232, 160, 63, 0.4);
+    box-shadow:
+      0 14px 28px -12px rgba(232, 160, 63, 0.4),
+      inset 0 0 0 1px rgba(255, 220, 180, 0.05);
+    gap: 14px;
+    align-items: center;
+  }
+  .platform--featured .icon--cover {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.5);
+  }
+  .platform--featured .icon--cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .featured-stack {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+    min-width: 0;
+  }
+  .featured-tag {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(232, 160, 63, 0.15);
+    border: 1px solid rgba(232, 160, 63, 0.4);
+  }
+  .featured-tag::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: blinkLive 1.4s ease-in-out infinite;
+  }
+  .platform--featured .label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .platform--featured .arrow { color: var(--accent); }
+  .platform--featured:hover,
+  .platform--featured:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
+  .platform--featured:hover .featured-tag,
+  .platform--featured:focus-visible .featured-tag {
+    background: rgba(0, 0, 0, 0.18);
+    color: #1a0a00;
+    border-color: rgba(0, 0, 0, 0.25);
+  }
+  .platform--featured:hover .featured-tag::before,
+  .platform--featured:focus-visible .featured-tag::before {
+    background: #1a0a00;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  }
+  .platform--featured:hover .label,
+  .platform--featured:focus-visible .label,
+  .platform--featured:hover .arrow,
+  .platform--featured:focus-visible .arrow { color: #000; }
+
+  @keyframes blinkLive {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  /* EVENTS */
+  .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .event-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .event-poster {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background: #111;
+    position: relative;
+    overflow: hidden;
+  }
+  .event-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .event-poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.85) 100%);
+    pointer-events: none;
+  }
+  .event-body {
+    display: flex;
+    align-items: stretch;
+    min-height: 96px;
+  }
+  .event-date-block {
+    flex: 0 0 auto;
+    width: 92px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    padding: 14px 8px;
+    background: linear-gradient(180deg, rgba(232, 160, 63, 0.08) 0%, rgba(232, 160, 63, 0.02) 100%);
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .event-day {
+    display: block;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+  }
+  .event-month {
+    display: block;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    padding-left: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    margin-top: 4px;
+  }
+  .event-date-block--range .event-day-range {
+    display: block;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .event-date-block--range .event-range-sep {
+    display: block;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1;
+    color: var(--accent-soft);
+    margin: 2px 0;
+  }
+  .event-date-block--range .event-month {
+    margin-top: 6px;
+  }
+  .event-info {
+    flex: 1;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+  }
+  .event-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: var(--text);
+    margin: 0;
+  }
+  .event-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.35;
+  }
+  .event-links {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .event-link {
+    flex: 1;
+    text-align: center;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition: all 150ms ease;
+  }
+  .event-link:hover,
+  .event-link:focus-visible {
+    background: var(--text);
+    color: #000;
+    border-color: var(--text);
+  }
+
+  .events-empty {
+    padding: 28px 20px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .events-empty strong {
+    color: var(--text);
+    font-weight: 600;
+    font-family: var(--font-display);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 16px;
+  }
+
+  /* COMING SOON (tracce) */
+  .coming-soon {
+    position: relative;
+    padding: 32px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+    overflow: hidden;
+  }
+  .coming-soon-cover {
+    display: block;
+    width: 70%;
+    max-width: 220px;
+    height: auto;
+    margin: 0 auto 24px;
+    border-radius: var(--radius);
+    box-shadow:
+      0 14px 30px -8px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(232, 160, 63, 0.25),
+      0 20px 60px -20px rgba(232, 160, 63, 0.4);
+    position: relative;
+    z-index: 1;
+  }
+  .coming-soon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(280px 120px at 50% 0%, rgba(232, 160, 63, 0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .coming-soon-label {
+    display: inline-block;
+    position: relative;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 5px 12px;
+    border: 1px solid rgba(232, 160, 63, 0.35);
+    border-radius: 999px;
+    background: rgba(232, 160, 63, 0.08);
+    margin-bottom: 18px;
+  }
+  .coming-soon-title {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 54px;
+    letter-spacing: -0.025em;
+    line-height: 0.95;
+    color: var(--text);
+    margin-bottom: 14px;
+    position: relative;
+    background: linear-gradient(180deg, var(--text) 0%, var(--accent-soft) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .coming-soon-date {
+    position: relative;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .coming-soon p {
+    margin: 0;
+    font-size: 11px;
+    color: var(--muted);
+    position: relative;
+    font-family: var(--font-mono);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    line-height: 1.6;
+  }
+
+  /* Mini audio preview player */
+  .preview-player {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+    z-index: 1;
+  }
+  .preview-play {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 160, 63, 0.4);
+    background: rgba(232, 160, 63, 0.1);
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 150ms ease, transform 150ms ease, color 150ms ease;
+    appearance: none;
+  }
+  .preview-play:hover { background: var(--accent); color: #1a0a00; }
+  .preview-play:active { transform: scale(0.95); }
+  .preview-play svg { width: 18px; height: 18px; fill: currentColor; }
+  .preview-play .icon-pause { display: none; }
+  .preview-play.is-playing .icon-play { display: none; }
+  .preview-play.is-playing .icon-pause { display: block; }
+
+  .preview-wave {
+    flex: 1;
+    position: relative;
+    height: 32px;
+    min-width: 0;
+  }
+  .preview-bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    pointer-events: none;
+  }
+  .preview-bar {
+    flex: 1;
+    margin: 0 1.2px;
+    background: rgba(245, 241, 234, 0.18);
+    border-radius: 1.5px;
+    min-height: 3px;
+  }
+  .preview-bars--accent {
+    z-index: 2;
+    clip-path: inset(0 100% 0 0);
+  }
+  .preview-bars--accent .preview-bar {
+    background: var(--accent);
+    box-shadow: 0 0 6px rgba(232, 160, 63, 0.45);
+  }
+
+  .preview-time {
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    min-width: 42px;
+    text-align: right;
+  }
+
+  .presave-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #1a0a00;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow:
+      0 12px 26px -10px rgba(232, 160, 63, 0.6),
+      0 0 0 1px rgba(255, 220, 180, 0.35) inset;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    position: relative;
+    z-index: 1;
+  }
+  .presave-cta:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 16px 32px -10px rgba(232, 160, 63, 0.7),
+      0 0 0 1px rgba(255, 220, 180, 0.4) inset;
+  }
+  .presave-cta:active { transform: translateY(0); }
+  .presave-cta svg { width: 14px; height: 14px; }
+
+  /* BOOKING */
+  .booking-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 20px;
+    background: var(--accent);
+    color: #000;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    box-shadow: 0 12px 30px -12px rgba(232, 160, 63, 0.6);
+  }
+  .booking-cta:hover,
+  .booking-cta:focus-visible {
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 18px 36px -12px rgba(232, 160, 63, 0.7);
+  }
+  .booking-cta:active {
+    transform: translateY(0);
+  }
+  .booking-cta .arrow {
+    width: 16px;
+    height: 16px;
+  }
+
+  .booking-email {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    margin: 12px 0 0;
+  }
+  .booking-email a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 1px;
+  }
+  .booking-email a:hover { color: var(--text); border-color: var(--muted); }
+
+  /* FOOTER */
+  footer {
+    margin-top: 32px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  footer .credit {
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    color: rgba(245, 241, 234, 0.32);
+  }
+  footer .credit a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+  footer .credit a:hover { color: var(--accent); }
+
+  /* REVEAL ANIMATION */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 600ms ease, transform 600ms ease;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* DESKTOP: show mobile container centered with breathing room */
+  @media (min-width: 600px) {
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: var(--backdrop, url('/foto/backdrop.jpg')) center / cover;
+      opacity: 0.05;
+      z-index: 0;
+      filter: blur(2px) grayscale(1);
+      pointer-events: none;
+    }
+    main {
+      padding-top: 56px;
+      padding-bottom: 64px;
+    }
+  }
+
+  /* Accessibility: focus styles */
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<main>
+
+  <!-- LANGUAGE SWITCHER -->
+  <nav class="lang" aria-label="Language">
+    <button type="button" data-lang="it" class="is-active" aria-pressed="true">IT</button>
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="hero reveal">
+    <div class="profile">
+      <img src="foto/profile.webp" alt="Antitesi" width="264" height="264">
+    </div>
+    <h1 class="brand">
+      <svg class="brand-mark" viewBox="0 0 5309 930" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <g fill="currentColor" transform="translate(130,800) scale(1,-1)">
+          <path transform="translate(0.0,0)" d="M201 0H-10L279 670H548L838 0H622L571 124H253ZM363 387 324 293H502L463 387L419 500H406Z"/>
+          <path transform="translate(873.0,0)" d="M218 0H30V670H230L416 419L514 265H527L518 411V670H706V0H506L308 258L223 390H210L218 262Z"/>
+          <path transform="translate(1654.0,0)" d="M440 0H252V501H15V670H676V501H440Z"/>
+          <path transform="translate(2390.0,0)" d="M218 0H30V670H218Z"/>
+          <path transform="translate(2683.0,0)" d="M440 0H252V501H15V670H676V501H440Z"/>
+          <path transform="translate(3419.0,0)" d="M625 0H30V670H625V501H218V421H610V253H218V169H625Z"/>
+          <path transform="translate(4112.0,0)" d="M355 -10Q25 -10 25 233V239H213V218Q213 183 238.0 172.0Q263 161 355 161Q437 161 459.0 168.5Q481 176 481 200Q481 218 467.0 227.0Q453 236 413 241L203 269Q15 295 15 461Q15 552 93.5 616.0Q172 680 340 680Q496 680 575.5 616.0Q655 552 655 437V431H467V446Q467 484 439.0 497.0Q411 510 320 510Q251 510 227.0 500.5Q203 491 203 468Q203 452 213.5 444.0Q224 436 251 432L461 401Q669 371 669 207Q669 113 591.5 51.5Q514 -10 355 -10Z"/>
+          <path transform="translate(4841.0,0)" d="M218 0H30V670H218Z"/>
+        </g>
+      </svg>
+      <span class="sr-only">ANTITESI</span>
+    </h1>
+    <p class="tagline" data-i18n="tagline">DJ &amp; Producer</p>
+  </header>
+
+  <!-- ASCOLTA -->
+  <section class="section reveal">
+    <div class="section-label" data-i18n="listen">Ascolta</div>
+    <div class="platforms">
+
+      <a class="platform" href="https://www.youtube.com/@antitesi" target="_blank" rel="noopener" data-platform="youtube">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M22 8c0-1.5-.2-2.4-.5-3-.4-.8-1.1-1.3-2-1.5C17.7 3 12 3 12 3s-5.7 0-7.5.5c-.9.2-1.6.7-2 1.5-.3.6-.5 1.5-.5 3-.2 1.7-.2 2.8-.2 4s0 2.3.2 4c0 1.5.2 2.4.5 3 .4.8 1.1 1.3 2 1.5C6.3 21 12 21 12 21s5.7 0 7.5-.5c.9-.2 1.6-.7 2-1.5.3-.6.5-1.5.5-3 .2-1.7.2-2.8.2-4s0-2.3-.2-4z"/><path d="M10 15l5-3-5-3v6z" fill="currentColor"/></svg>
+        </span>
+        <span class="label">YouTube</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+
+      <a class="platform" href="https://open.spotify.com/artist/10C7ayGjYpyEgKZqymRcO5" target="_blank" rel="noopener" data-platform="spotify">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9"/><path d="M7.5 10c3-1 6-1 9 .5"/><path d="M8 13c2.5-.8 5-.7 7.5.5"/><path d="M8.5 16c2-.5 4-.4 6 .5"/></svg>
+        </span>
+        <span class="label">Spotify</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+
+      <a class="platform" href="https://on.soundcloud.com/EO870HYMi6QtEIxAwJ" target="_blank" rel="noopener" data-platform="soundcloud">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 14v4"/><path d="M6 12v6"/><path d="M9 10v8"/><path d="M12 8v10"/><path d="M15 10v8"/><path d="M18 12h2a2 2 0 1 1 0 4h-2v-4z" fill="currentColor" stroke="none"/><path d="M18 10v8"/></svg>
+        </span>
+        <span class="label">SoundCloud</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+
+      <a class="platform" href="https://www.tiktok.com/@antitesi" target="_blank" rel="noopener" data-platform="tiktok">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M16 3v9a4 4 0 1 1-4-4"/><path d="M16 3c0 2.5 2 4.5 5 4.5"/></svg>
+        </span>
+        <span class="label">TikTok</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+
+      <a class="platform" href="https://www.instagram.com/danceintoparadise" target="_blank" rel="noopener" data-platform="instagram">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <span class="label">@danceintoparadise</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+
+      <a class="platform platform--featured" href="https://open.spotify.com/album/3QL1zd4AfwzB54SypobBX7" target="_blank" rel="noopener" data-zaya="album">
+        <span class="icon icon--cover">
+          <img src="/zaya/cover.jpg" alt="" width="800" height="800">
+        </span>
+        <span class="featured-stack">
+          <span class="label">Zaya · Antitesi</span>
+        </span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- EVENTI -->
+  <section class="section reveal" id="events-section">
+    <div class="section-label" data-i18n="dates">Prossime date</div>
+    <div class="events-list" id="events-list">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
+  <!-- TRACCE -->
+  <section class="section reveal" id="tracks-section">
+    <div class="section-label" data-i18n="releases">Tracce</div>
+    <div id="tracks-list"><!-- populated by JS --></div>
+  </section>
+
+  <!-- BOOKING -->
+  <section class="section reveal">
+    <div class="section-label" data-i18n="booking">Booking</div>
+    <a class="booking-cta" href="mailto:contactantitesi@gmail.com?subject=Booking%20Antitesi">
+      <span data-i18n="bookingCta">Scrivi ad Antitesi</span>
+      <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+    </a>
+    <p class="booking-email">
+      <a href="mailto:contactantitesi@gmail.com">contactantitesi@gmail.com</a>
+    </p>
+  </section>
+
+  <footer>
+    <span>© 2026 · antitesi</span>
+    <span class="credit">by <a href="https://satoshiweb.it" target="_blank" rel="noopener">satoshiweb.it</a></span>
+  </footer>
+
+</main>
+
+<script>
+  // ===== I18N =====
+  const I18N = {
+    it: {
+      tagline: "DJ & Producer",
+      listen: "Ascolta",
+      dates: "Prossime date",
+      releases: "Tracce",
+      booking: "Booking",
+      emptyDatesTitle: "Nessuna data in programma",
+      emptyDatesBody: "Nuove date in arrivo. Resta aggiornato sui profili social.",
+      comingSoonLabel: "Out now",
+      comingSoonDate: "Out now · 8 maggio 2026",
+      comingSoonBody: "Disponibile su tutte<br>le piattaforme",
+      listenCta: "Ascolta su Spotify",
+      featuredTag: "Out now",
+      bookingCta: "Scrivi ad Antitesi",
+      posterAlt: "Locandina",
+      title: "ANTITESI · DJ & Producer · Roma",
+      description: "Antitesi. DJ & producer da Roma. Set live, prossime date, contatti per booking.",
+      months: ['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC']
+    },
+    en: {
+      tagline: "DJ & Producer",
+      listen: "Listen",
+      dates: "Upcoming dates",
+      releases: "Tracks",
+      booking: "Booking",
+      emptyDatesTitle: "No upcoming dates",
+      emptyDatesBody: "New dates coming soon. Stay tuned on social.",
+      comingSoonLabel: "Out now",
+      comingSoonDate: "Out now · May 8, 2026",
+      comingSoonBody: "Available on<br>all streaming platforms",
+      listenCta: "Listen on Spotify",
+      featuredTag: "Out now",
+      bookingCta: "Get in touch",
+      posterAlt: "Poster",
+      title: "ANTITESI · DJ & Producer · Rome",
+      description: "Antitesi. House DJ & producer from Rome. Live sets, upcoming dates, booking contacts.",
+      months: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+    }
+  };
+
+  const LANG_KEY = 'antitesi.lang';
+  let currentLang = (localStorage.getItem(LANG_KEY) || (navigator.language || 'it').slice(0, 2).toLowerCase());
+  if (!I18N[currentLang]) currentLang = 'it';
+
+  function applyLang(lang) {
+    if (!I18N[lang]) lang = 'it';
+    currentLang = lang;
+    const t = I18N[lang];
+    document.documentElement.lang = lang;
+    document.title = t.title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', t.description);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key] == null) return;
+      if (el.dataset.i18nHtml === 'true') el.innerHTML = t[key];
+      else el.textContent = t[key];
+    });
+    document.querySelectorAll('.lang button').forEach(btn => {
+      const active = btn.dataset.lang === lang;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    try { localStorage.setItem(LANG_KEY, lang); } catch (_) {}
+    if (SITE.tagline) {
+      const tl = document.querySelector('.tagline');
+      if (tl) tl.textContent = SITE.tagline;
+    }
+    loadEvents();
+    renderTracks();
+  }
+
+  // ===== SITE CONTENT (managed from the admin panel) =====
+  let SITE = {};
+  let TRACKS = null;
+  function setAttrIf(sel, attr, val) {
+    if (!val) return;
+    document.querySelectorAll(sel).forEach(el => el.setAttribute(attr, val));
+  }
+  function setSrcIf(sel, val) {
+    if (!val) return;
+    document.querySelectorAll(sel).forEach(el => { el.src = val; });
+  }
+  async function applySiteContent() {
+    try {
+      const res = await fetch('/api/content', { cache: 'no-store' });
+      if (!res.ok) return;
+      SITE = (await res.json()) || {};
+    } catch (_) { return; }
+
+    const p = SITE.photos || {};
+    setSrcIf('.profile img', p.profile);
+    if (p.hero) {
+      const og = document.querySelector('meta[property="og:image"]');
+      if (og) og.setAttribute('content', p.hero);
+    }
+    if (p.backdrop) {
+      document.documentElement.style.setProperty('--backdrop', `url('${p.backdrop}')`);
+    }
+
+    const l = SITE.links || {};
+    setAttrIf('[data-platform="youtube"]', 'href', l.youtube);
+    setAttrIf('[data-platform="spotify"]', 'href', l.spotify);
+    setAttrIf('[data-platform="soundcloud"]', 'href', l.soundcloud);
+    setAttrIf('[data-platform="tiktok"]', 'href', l.tiktok);
+    setAttrIf('[data-platform="instagram"]', 'href', l.instagram);
+    if (l.instagramHandle) {
+      const ig = document.querySelector('[data-platform="instagram"] .label');
+      if (ig) ig.textContent = l.instagramHandle;
+    }
+
+    const b = SITE.booking || {};
+    if (b.email) {
+      const subject = '?subject=Booking%20Antitesi';
+      document.querySelectorAll('.booking-cta').forEach(a => a.setAttribute('href', `mailto:${b.email}${subject}`));
+      const emailLink = document.querySelector('.booking-email a');
+      if (emailLink) { emailLink.setAttribute('href', `mailto:${b.email}`); emailLink.textContent = b.email; }
+    }
+
+    if (SITE.tagline) {
+      const tl = document.querySelector('.tagline');
+      if (tl) tl.textContent = SITE.tagline;
+    }
+  }
+
+  document.querySelectorAll('.lang button').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+  });
+
+  // Init language (also triggers first events render)
+  applyLang(currentLang);
+  applySiteContent();
+  loadTracks();
+
+  // ===== EVENTS LOADER =====
+  async function loadEvents() {
+    const list = document.getElementById('events-list');
+    if (!list) return;
+    const t = I18N[currentLang];
+
+    const emptyState = `
+      <div class="events-empty">
+        <strong>${t.emptyDatesTitle}</strong>
+        ${t.emptyDatesBody}
+      </div>`;
+
+    try {
+      let res = await fetch('/api/events', { cache: 'no-store' });
+      if (!res.ok) res = await fetch('events.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error('fetch failed');
+      const events = await res.json();
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const upcoming = (events || [])
+        .filter(e => e && e.date)
+        .filter(e => new Date(e.endDate || e.date) >= today)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      if (upcoming.length === 0) {
+        list.innerHTML = emptyState;
+        return;
+      }
+
+      list.innerHTML = upcoming.map(renderEventCard).join('');
+    } catch (err) {
+      list.innerHTML = emptyState;
+    }
+  }
+
+  function renderDateBlock(e, t) {
+    const d = new Date(e.date);
+    const day = isNaN(d) ? '' : d.getDate();
+    const month = isNaN(d) ? '' : t.months[d.getMonth()];
+
+    const d2 = e.endDate ? new Date(e.endDate) : null;
+    if (d2 && !isNaN(d2)) {
+      const day2 = d2.getDate();
+      const month2 = t.months[d2.getMonth()];
+      const sameMonth = d.getMonth() === d2.getMonth() && d.getFullYear() === d2.getFullYear();
+      const body = sameMonth
+        ? `<span class="event-day-range">${day}–${day2}</span>
+           <span class="event-month">${escapeHtml(month)}</span>`
+        : `<span class="event-day-range">${day} ${escapeHtml(month)}</span>
+           <span class="event-range-sep">→</span>
+           <span class="event-day-range">${day2} ${escapeHtml(month2)}</span>`;
+      return `<div class="event-date-block event-date-block--range">${body}</div>`;
+    }
+
+    return `<div class="event-date-block">
+            <span class="event-day">${day}</span>
+            <span class="event-month">${escapeHtml(month)}</span>
+          </div>`;
+  }
+
+  function renderEventCard(e) {
+    const t = I18N[currentLang];
+
+    const title = e.title || e.venue || '';
+    const venueLine = (e.title && e.venue) ? e.venue : '';
+    const cityLine = e.city || '';
+
+    const links = [];
+    if (e.ig_link) links.push(`<a class="event-link" href="${escapeHtml(e.ig_link)}" target="_blank" rel="noopener">Instagram ↗</a>`);
+    if (e.tiktok_link) links.push(`<a class="event-link" href="${escapeHtml(e.tiktok_link)}" target="_blank" rel="noopener">TikTok ↗</a>`);
+
+    return `
+      <article class="event-card">
+        ${e.poster ? `
+        <div class="event-poster">
+          <img src="${escapeHtml(e.poster)}" alt="${escapeHtml(t.posterAlt)} ${escapeHtml(title)}" loading="lazy">
+        </div>` : ''}
+        <div class="event-body">
+          ${renderDateBlock(e, t)}
+          <div class="event-info">
+            <h3 class="event-title">${escapeHtml(title)}</h3>
+            ${venueLine ? `<p class="event-subtitle">${escapeHtml(venueLine)}</p>` : ''}
+            ${cityLine ? `<p class="event-subtitle">${escapeHtml(cityLine)}</p>` : ''}
+            ${links.length ? `<div class="event-links">${links.join('')}</div>` : ''}
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    const day = d.getDate();
+    const months = I18N[currentLang].months;
+    return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // ===== REVEAL ON SCROLL =====
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    el.style.transitionDelay = `${Math.min(i * 80, 320)}ms`;
+    observer.observe(el);
+  });
+
+  // ===== TRACKS (releases, managed from the panel) =====
+  function initPreviewPlayer(root, clipUrl) {
+    const NUM_BARS = 38;
+    const audio = root.querySelector('audio');
+    const playBtn = root.querySelector('.preview-play');
+    const bg = root.querySelector('.preview-bars:not(.preview-bars--accent)');
+    const fg = root.querySelector('.preview-bars--accent');
+    const timeEl = root.querySelector('.preview-time');
+    if (!audio || !playBtn || !bg || !fg || !timeEl) return;
+
+    for (let i = 0; i < NUM_BARS; i++) {
+      const a = document.createElement('div'); a.className = 'preview-bar'; a.style.height = '6px'; bg.appendChild(a);
+      const b = document.createElement('div'); b.className = 'preview-bar'; b.style.height = '6px'; fg.appendChild(b);
+    }
+    const fmt = (s) => { const mm = Math.floor(s / 60); const ss = Math.floor(s % 60); return `${mm}:${String(ss).padStart(2, '0')}`; };
+
+    let peaksReady = false, totalDuration = 14.9;
+    async function ensurePeaks() {
+      if (peaksReady) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const buf = await fetch(clipUrl).then(r => r.arrayBuffer());
+        const decoded = await ctx.decodeAudioData(buf);
+        totalDuration = decoded.duration;
+        const data = decoded.getChannelData(0);
+        const blockSize = Math.floor(data.length / NUM_BARS);
+        let max = 0; const raw = [];
+        for (let i = 0; i < NUM_BARS; i++) {
+          let sum = 0; const s = i * blockSize; const e = Math.min(s + blockSize, data.length);
+          for (let j = s; j < e; j++) sum += Math.abs(data[j]);
+          const v = sum / Math.max(1, e - s); raw.push(v); if (v > max) max = v;
+        }
+        const peaks = raw.map(v => max > 0 ? Math.min(1, (v / max) * 1.4) : 0.5);
+        const bgBars = bg.querySelectorAll('.preview-bar'); const fgBars = fg.querySelectorAll('.preview-bar');
+        peaks.forEach((p, i) => { const h = Math.max(4, Math.min(30, 4 + p * 28)); bgBars[i].style.height = h + 'px'; fgBars[i].style.height = h + 'px'; });
+        peaksReady = true;
+      } catch (err) { console.error('preview peaks failed', err); }
+    }
+    function renderTick() {
+      const t = audio.currentTime || 0;
+      const total = isFinite(audio.duration) && audio.duration > 0 ? audio.duration : totalDuration;
+      fg.style.clipPath = `inset(0 ${(1 - Math.min(1, t / total)) * 100}% 0 0)`;
+      timeEl.textContent = fmt(t);
+      if (!audio.paused) requestAnimationFrame(renderTick);
+    }
+    playBtn.addEventListener('click', async () => {
+      document.querySelectorAll('#tracks-list audio').forEach(a => { if (a !== audio) a.pause(); });
+      await ensurePeaks();
+      if (audio.paused) {
+        try { await audio.play(); playBtn.classList.add('is-playing'); requestAnimationFrame(renderTick); }
+        catch (e) { console.error(e); }
+      } else { audio.pause(); playBtn.classList.remove('is-playing'); }
+    });
+    audio.addEventListener('ended', () => { playBtn.classList.remove('is-playing'); audio.currentTime = 0; fg.style.clipPath = 'inset(0 100% 0 0)'; timeEl.textContent = '0:00'; });
+    audio.addEventListener('pause', () => { playBtn.classList.remove('is-playing'); });
+  }
+
+  const SPOTIFY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.59 14.43c-.19.31-.59.41-.9.21-2.46-1.5-5.55-1.84-9.19-1.01-.36.08-.71-.14-.79-.5-.08-.36.14-.71.5-.79 3.97-.91 7.39-.51 10.15 1.18.31.19.41.59.21.9zm1.23-2.74c-.24.39-.74.51-1.13.27-2.81-1.73-7.09-2.23-10.42-1.21-.43.13-.89-.11-1.02-.54-.13-.43.11-.89.54-1.02 3.81-1.16 8.55-.6 11.78 1.39.39.24.51.74.27 1.13zm.11-2.85c-3.37-2-8.94-2.18-12.16-1.21-.52.16-1.07-.13-1.23-.65-.16-.52.13-1.07.65-1.23 3.7-1.12 9.86-.91 13.74 1.4.46.27.61.87.34 1.33-.27.46-.87.61-1.33.34z"/></svg>';
+  const ARROW_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>';
+
+  function trackSort(a, b) {
+    if (a.date && b.date) return new Date(b.date) - new Date(a.date);
+    if (a.date) return -1;
+    if (b.date) return 1;
+    return 0;
+  }
+
+  async function loadTracks() {
+    try {
+      let res = await fetch('/api/tracks', { cache: 'no-store' });
+      if (!res.ok) res = await fetch('/tracks.json', { cache: 'no-store' });
+      TRACKS = res.ok ? await res.json() : [];
+    } catch (_) { TRACKS = []; }
+    renderTracks();
+  }
+
+  function renderTracks() {
+    const list = document.getElementById('tracks-list');
+    if (!list || !Array.isArray(TRACKS)) return;
+    const t = I18N[currentLang];
+    const tracks = TRACKS.slice().sort(trackSort);
+
+    // Update the featured tile in the "Ascolta" list with the latest track
+    const featured = document.querySelector('.platform--featured');
+    if (featured) {
+      const top = tracks[0];
+      if (top) {
+        featured.style.display = '';
+        featured.setAttribute('href', top.link || '#');
+        const cov = featured.querySelector('.icon--cover img');
+        if (cov && top.cover) cov.src = top.cover;
+        const lab = featured.querySelector('.label');
+        if (lab) lab.textContent = top.title + ' · Antitesi';
+      } else {
+        featured.style.display = 'none';
+      }
+    }
+
+    list.innerHTML = tracks.map((tr, i) => {
+      const player = tr.clip ? `
+        <div class="preview-player">
+          <button class="preview-play" aria-label="Play preview" type="button">
+            <svg class="icon-play" viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+          </button>
+          <div class="preview-wave">
+            <div class="preview-bars"></div>
+            <div class="preview-bars preview-bars--accent"></div>
+          </div>
+          <span class="preview-time">0:00</span>
+          <audio preload="none" src="${escapeHtml(tr.clip)}"></audio>
+        </div>` : '';
+      const cta = tr.link ? `
+        <a class="presave-cta" href="${escapeHtml(tr.link)}" target="_blank" rel="noopener">
+          ${SPOTIFY_ICON}<span>${escapeHtml(t.listenCta)}</span>${ARROW_ICON}
+        </a>` : '';
+      const cover = tr.cover ? `<img class="coming-soon-cover" src="${escapeHtml(tr.cover)}" alt="${escapeHtml(tr.title)} cover" loading="lazy">` : '';
+      const label = tr.label ? `<span class="coming-soon-label">${escapeHtml(tr.label)}</span>` : '';
+      return `<article class="coming-soon track-card"${i > 0 ? ' style="margin-top:14px"' : ''}>
+        ${label}
+        ${cover}
+        <div class="coming-soon-title">${escapeHtml(tr.title)}</div>
+        ${player}
+        ${cta}
+      </article>`;
+    }).join('');
+
+    list.querySelectorAll('.track-card').forEach((card, i) => {
+      const player = card.querySelector('.preview-player');
+      if (player && tracks[i] && tracks[i].clip) initPreviewPlayer(player, tracks[i].clip);
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>ZAYA · Storie · Antitesi</title>
+
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=clash-display@600,700&display=swap" rel="stylesheet">
+<!-- JetBrains Mono non e' ospitato da Fontshare: va preso da Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #050505;
+    --text: #f5f1ea;
+    --accent: #e8a03f;
+    --accent-soft: #f2c373;
+    --muted: #8a8278;
+    --font-display: "Clash Display", system-ui, sans-serif;
+    --font-body: "Satoshi", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    color: var(--text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* CAROUSEL ============================================== */
+  .carousel {
+    width: 100vw;
+    height: 100dvh;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    display: flex;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .carousel::-webkit-scrollbar { display: none; }
+
+  .scene {
+    flex: 0 0 100vw;
+    width: 100vw;
+    height: 100dvh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+    isolation: isolate;
+  }
+
+  /* Inner stage 9:16 */
+  .scene-inner {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* TOP UI =============================================== */
+  .top-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  .scene-name {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    color: var(--text);
+    text-transform: uppercase;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: auto;
+  }
+
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    color: var(--text);
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+  }
+
+  /* DOTS NAVIGATION ====================================== */
+  .dots {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom, 0) + 80px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 49;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: background 200ms ease, width 200ms ease;
+  }
+  .dot.is-active {
+    background: var(--accent);
+    width: 18px;
+    border-radius: 6px;
+  }
+
+  /* SHARE BUTTON ========================================= */
+  .share-fab {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom, 0) + 18px);
+    left: 16px;
+    right: 16px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 22px;
+    background: var(--accent);
+    color: #1a0a00;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 0;
+    border-radius: 999px;
+    box-shadow:
+      0 16px 32px -10px rgba(232, 160, 63, 0.6),
+      0 0 0 1px rgba(255, 220, 180, 0.3) inset;
+    cursor: pointer;
+    appearance: none;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+  .share-fab:hover { transform: translateY(-1px); }
+  .share-fab:active { transform: translateY(0); }
+  .share-fab svg { width: 16px; height: 16px; }
+  .share-fab.is-loading { opacity: 0.7; pointer-events: none; }
+  .share-fab.is-loading::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .share-fab.is-loading svg, .share-fab.is-loading span { display: none; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SCENE 1: PASTE-UP ==================================== */
+  .scene--pasteup {
+    background:
+      radial-gradient(circle at 30% 30%, #2a2520, #0e0c0a 60%);
+  }
+  .scene--pasteup::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+  }
+  .scene--pasteup::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.6) 100%),
+      radial-gradient(80% 60% at 70% 80%, rgba(232, 160, 63, 0.08), transparent);
+  }
+
+  .pasteup-poster {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -54%) rotate(-1.8deg);
+    width: 72%;
+    aspect-ratio: 1;
+    background-image: url('/zaya/cover.jpg');
+    background-size: cover;
+    background-position: center;
+    box-shadow:
+      0 30px 60px -10px rgba(0, 0, 0, 0.7),
+      0 0 0 1px rgba(0, 0, 0, 0.5);
+    /* Torn edges via clip-path */
+    clip-path: polygon(
+      1% 2%, 12% 0%, 24% 3%, 38% 0%, 51% 2%, 65% 0%, 78% 2%, 90% 0%, 99% 3%,
+      100% 14%, 98% 28%, 100% 42%, 99% 56%, 97% 70%, 100% 84%, 98% 96%,
+      89% 100%, 76% 98%, 62% 100%, 48% 97%, 34% 100%, 21% 98%, 8% 100%, 0% 92%,
+      2% 78%, 0% 64%, 1% 50%, 0% 36%, 2% 22%, 0% 10%
+    );
+  }
+
+  .pasteup-tape {
+    position: absolute;
+    width: 80px;
+    height: 22px;
+    background: rgba(245, 230, 180, 0.55);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+  .pasteup-tape--tl { top: 12%; left: 8%; transform: rotate(-12deg); }
+  .pasteup-tape--br { bottom: 26%; right: 6%; transform: rotate(8deg); }
+
+  .pasteup-graffiti {
+    position: absolute;
+    bottom: 12%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 38px;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    text-shadow:
+      0 0 20px rgba(232, 160, 63, 0.8),
+      2px 2px 0 rgba(0, 0, 0, 0.6),
+      -1px -1px 0 rgba(232, 160, 63, 0.4);
+    transform: rotate(-2deg);
+    text-transform: uppercase;
+  }
+
+  .pasteup-meta {
+    position: absolute;
+    bottom: 5%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* SCENE 2: LED BEACH =================================== */
+  .scene--led {
+    background:
+      linear-gradient(180deg,
+        #1a0820 0%,
+        #4a1830 25%,
+        #c25a3a 55%,
+        #e89060 70%,
+        #2a1820 95%,
+        #0a0808 100%);
+  }
+  .scene--led::before {
+    /* Sun glow */
+    content: "";
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    aspect-ratio: 1;
+    background: radial-gradient(circle, rgba(255, 200, 130, 0.6), transparent 60%);
+    pointer-events: none;
+  }
+  .scene--led::after {
+    /* Water reflection */
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background:
+      linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.5)),
+      repeating-linear-gradient(180deg,
+        transparent 0px,
+        transparent 4px,
+        rgba(232, 160, 63, 0.1) 4px,
+        rgba(232, 160, 63, 0.1) 5px);
+    pointer-events: none;
+  }
+
+  .led-frame {
+    position: absolute;
+    top: 22%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 64%;
+    aspect-ratio: 1;
+    z-index: 2;
+  }
+
+  .led-screen {
+    position: absolute;
+    inset: 6%;
+    background-image: url('/zaya/cover.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+    box-shadow:
+      0 0 60px rgba(255, 200, 130, 0.6),
+      0 0 0 6px #1a1a1a,
+      0 0 0 8px #2a2a2a,
+      0 0 0 9px #0a0a0a,
+      0 30px 60px rgba(0, 0, 0, 0.6);
+    /* Pixel grid overlay */
+    background-blend-mode: normal;
+  }
+  .led-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.12) 2px,
+        rgba(0, 0, 0, 0.12) 3px),
+      repeating-linear-gradient(90deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.12) 2px,
+        rgba(0, 0, 0, 0.12) 3px);
+    pointer-events: none;
+    border-radius: 4px;
+  }
+  /* Frame supports */
+  .led-frame::before, .led-frame::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    background: linear-gradient(90deg, #2a2a2a, #555, #2a2a2a);
+    bottom: -50%;
+    height: 50%;
+    z-index: -1;
+  }
+  .led-frame::before { left: 18%; }
+  .led-frame::after { right: 18%; }
+
+  .led-crowd {
+    position: absolute;
+    bottom: 20%;
+    left: 0;
+    right: 0;
+    height: 24%;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .led-meta-top {
+    position: absolute;
+    top: 8%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 4;
+  }
+  .led-meta-top .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+  }
+  .led-meta-top .pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .led-meta-bot {
+    position: absolute;
+    bottom: 6%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 4;
+  }
+  .led-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 70px;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: #fff;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+  }
+  .led-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: var(--accent);
+    margin-top: 8px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  /* SCENE 3: SPOTIFY MOCKUP ============================== */
+  .scene--spotify {
+    background:
+      linear-gradient(180deg,
+        #80c8d8 0%,
+        #c8b88a 35%,
+        #2a2a2a 65%,
+        #050505 100%);
+  }
+  .scene--spotify::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(80% 50% at 50% 30%, rgba(232, 160, 63, 0.18), transparent);
+  }
+
+  .phone {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 76%;
+    aspect-ratio: 9/19.5;
+    background: #0a0a0a;
+    border-radius: 38px;
+    border: 2px solid #2a2a2a;
+    box-shadow:
+      0 40px 80px rgba(0, 0, 0, 0.6),
+      0 0 0 6px #1a1a1a,
+      0 0 0 7px #333,
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .phone-screen {
+    position: absolute;
+    inset: 8px;
+    border-radius: 30px;
+    background:
+      linear-gradient(180deg, #5a8aa8 0%, #c8a878 35%, #4a3a30 70%, #1a1410 100%);
+    overflow: hidden;
+    padding: 32px 18px 18px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-notch {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 22px;
+    background: #000;
+    border-radius: 12px;
+    z-index: 5;
+  }
+
+  .phone-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    margin-bottom: 14px;
+  }
+
+  .phone-icons {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .phone-icons span {
+    display: inline-block;
+    background: #fff;
+  }
+  .phone-icons .signal { width: 14px; height: 9px; clip-path: polygon(0 100%, 25% 100%, 25% 70%, 50% 100%, 50% 50%, 75% 100%, 75% 30%, 100% 100%, 100% 0); }
+  .phone-icons .wifi { width: 14px; height: 10px; clip-path: polygon(50% 100%, 0 50%, 18% 30%, 50% 60%, 82% 30%, 100% 50%); }
+  .phone-icons .battery { width: 22px; height: 10px; border: 1px solid #fff; border-radius: 2px; background: linear-gradient(90deg, #fff 80%, transparent 80%); }
+
+  .phone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    margin-bottom: 24px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+  .phone-header .label { opacity: 0.7; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.24em; font-size: 9px;}
+  .phone-header .title { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 0; }
+
+  .phone-art {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background-image: url('/zaya/cover.jpg');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+    margin-bottom: 22px;
+  }
+
+  .phone-track {
+    color: #fff;
+    margin-bottom: 14px;
+  }
+  .phone-track-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .phone-track-artist {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  .phone-progress {
+    margin-bottom: 14px;
+  }
+  .phone-progress-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    position: relative;
+    overflow: hidden;
+  }
+  .phone-progress-fill {
+    height: 100%;
+    width: 28%;
+    background: #fff;
+    border-radius: 999px;
+  }
+  .phone-progress-time {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .phone-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    margin-top: auto;
+  }
+  .phone-controls svg { fill: #fff; }
+  .phone-play {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .phone-play svg { fill: #000; }
+
+  .spotify-meta {
+    position: absolute;
+    bottom: 6%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 3;
+  }
+  .spotify-meta-text {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+  }
+  .spotify-meta-text strong { color: var(--accent-soft); }
+
+  /* SCENE 4: VINYL VITRINE =============================== */
+  .scene--vinyl {
+    background:
+      radial-gradient(circle at 50% 40%, #1a0e08 0%, #050505 70%);
+  }
+  .scene--vinyl::before {
+    /* Spot light */
+    content: "";
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 70%;
+    background: radial-gradient(ellipse, rgba(232, 160, 63, 0.32), transparent 60%);
+    pointer-events: none;
+  }
+  .scene--vinyl::after {
+    /* Glass reflection */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(115deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.05) 45%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.04) 55%,
+        transparent 65%);
+    pointer-events: none;
+    z-index: 8;
+  }
+
+  .vinyl-stage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+    width: 78%;
+    aspect-ratio: 1;
+    z-index: 2;
+  }
+
+  .vinyl-disk {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      repeating-radial-gradient(
+        circle at 50% 50%,
+        #060606 0px,
+        #060606 2px,
+        #1a1a1a 2px,
+        #1a1a1a 3px
+      );
+    box-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.7),
+      0 0 80px rgba(232, 160, 63, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  }
+  .vinyl-disk::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(232, 160, 63, 0.15) 30deg,
+      transparent 90deg,
+      transparent 200deg,
+      rgba(255, 255, 255, 0.06) 230deg,
+      transparent 290deg
+    );
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  .vinyl-cover {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 42%;
+    aspect-ratio: 1;
+    margin-left: -21%;
+    margin-top: -21%;
+    border-radius: 50%;
+    background-image: url('/zaya/cover.jpg');
+    background-size: cover;
+    background-position: center;
+    box-shadow:
+      0 0 0 3px #060606,
+      0 0 0 4px rgba(232, 160, 63, 0.35),
+      0 0 0 5px rgba(0, 0, 0, 0.6);
+  }
+
+  .vinyl-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    margin: -6px 0 0 -6px;
+    border-radius: 50%;
+    background: #000;
+    z-index: 3;
+  }
+
+  .vinyl-tag {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+    background: var(--accent);
+    color: #1a0a00;
+    padding: 8px 16px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    z-index: 5;
+  }
+  .vinyl-tag::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -12px;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+
+  .vinyl-title {
+    position: absolute;
+    bottom: 14%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 4;
+  }
+  .vinyl-title h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 60px;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    background: linear-gradient(180deg, var(--text), var(--accent-soft));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .vinyl-title p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: var(--accent);
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .share-fab.is-loading::after { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP UI -->
+<div class="top-ui">
+  <a class="back-link" href="../">← Zaya</a>
+  <span class="scene-name" id="sceneName">Paste-up</span>
+</div>
+
+<!-- CAROUSEL -->
+<div class="carousel" id="carousel">
+
+  <!-- SCENE 1: PASTE-UP -->
+  <section class="scene scene--pasteup" data-name="Paste-up">
+    <div class="scene-inner">
+      <div class="pasteup-poster"></div>
+      <div class="pasteup-tape pasteup-tape--tl"></div>
+      <div class="pasteup-tape pasteup-tape--br"></div>
+      <div class="pasteup-graffiti">ANTITESI</div>
+      <div class="pasteup-meta">ZAYA · OUT 8 MAGGIO 2026</div>
+    </div>
+  </section>
+
+  <!-- SCENE 2: LED BEACH -->
+  <section class="scene scene--led" data-name="LED Beach">
+    <div class="scene-inner">
+      <div class="led-meta-top">
+        <span class="pill">Paradise · Mediterraneo Beach Resort</span>
+      </div>
+
+      <div class="led-frame">
+        <div class="led-screen"></div>
+      </div>
+
+      <svg class="led-crowd" viewBox="0 0 400 100" preserveAspectRatio="xMidYMax slice">
+        <g fill="#000">
+          <ellipse cx="40" cy="100" rx="22" ry="35"/>
+          <circle cx="40" cy="55" r="12"/>
+          <ellipse cx="80" cy="100" rx="20" ry="40"/>
+          <circle cx="80" cy="50" r="11"/>
+          <ellipse cx="125" cy="100" rx="24" ry="38"/>
+          <circle cx="125" cy="52" r="13"/>
+          <ellipse cx="170" cy="100" rx="20" ry="42"/>
+          <circle cx="170" cy="48" r="11"/>
+          <ellipse cx="210" cy="100" rx="22" ry="36"/>
+          <circle cx="210" cy="54" r="12"/>
+          <path d="M 195 60 L 200 30 L 205 58" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="255" cy="100" rx="23" ry="40"/>
+          <circle cx="255" cy="50" r="13"/>
+          <ellipse cx="300" cy="100" rx="21" ry="38"/>
+          <circle cx="300" cy="52" r="12"/>
+          <path d="M 285 62 L 290 35 L 295 60" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M 305 60 L 310 30 L 315 58" stroke="#000" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="345" cy="100" rx="22" ry="40"/>
+          <circle cx="345" cy="50" r="12"/>
+          <ellipse cx="385" cy="100" rx="20" ry="38"/>
+          <circle cx="385" cy="52" r="11"/>
+        </g>
+      </svg>
+
+      <div class="led-meta-bot">
+        <div class="led-title">ZAYA</div>
+        <div class="led-sub">8 MAGGIO 2026 · Antitesi</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3: SPOTIFY MOCKUP -->
+  <section class="scene scene--spotify" data-name="Spotify">
+    <div class="scene-inner">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-status">
+            <span>9:41</span>
+            <div class="phone-icons">
+              <span class="signal"></span>
+              <span class="wifi"></span>
+              <span class="battery"></span>
+            </div>
+          </div>
+
+          <div class="phone-header">
+            <span style="font-size: 18px;">⌄</span>
+            <div style="text-align: center;">
+              <div class="label">Now Playing</div>
+              <div class="title">Antitesi · Single</div>
+            </div>
+            <span style="font-size: 18px;">⋯</span>
+          </div>
+
+          <div class="phone-art"></div>
+
+          <div class="phone-track">
+            <div class="phone-track-name">Zaya</div>
+            <div class="phone-track-artist">Antitesi</div>
+          </div>
+
+          <div class="phone-progress">
+            <div class="phone-progress-bar">
+              <div class="phone-progress-fill"></div>
+            </div>
+            <div class="phone-progress-time">
+              <span>0:48</span>
+              <span>3:12</span>
+            </div>
+          </div>
+
+          <div class="phone-controls">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M16 2v8l-7-4 7-4zm0 12v8l-7-4 7-4zM7 4h2v16H7z"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24"><path d="M6 4l12 8-12 8z"/></svg>
+            <div class="phone-play">
+              <svg width="22" height="22" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            </div>
+            <svg width="32" height="32" viewBox="0 0 24 24"><path d="M18 4l-12 8 12 8z" transform="rotate(180 12 12)"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M8 2v8l7-4-7-4zm0 12v8l7-4-7-4zm7-10h2v16h-2z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="spotify-meta">
+        <div class="spotify-meta-text">OUT <strong>8 MAGGIO 2026</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4: VINYL VITRINE -->
+  <section class="scene scene--vinyl" data-name="Record Store">
+    <div class="scene-inner">
+      <div class="vinyl-tag">New In · Antitesi</div>
+      <div class="vinyl-stage">
+        <div class="vinyl-disk"></div>
+        <div class="vinyl-cover"></div>
+        <div class="vinyl-hole"></div>
+      </div>
+      <div class="vinyl-title">
+        <h2>ZAYA</h2>
+        <p>OUT 8 MAGGIO 2026</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- DOTS -->
+<nav class="dots" id="dots">
+  <span class="dot is-active"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+</nav>
+
+<!-- SHARE FAB -->
+<button class="share-fab" id="shareBtn">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+    <polyline points="16 6 12 2 8 6"/>
+    <line x1="12" y1="2" x2="12" y2="15"/>
+  </svg>
+  <span>Condividi storia</span>
+</button>
+
+<!-- html2canvas for snapshot -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
+<script>
+  const carousel = document.getElementById('carousel');
+  const scenes = document.querySelectorAll('.scene');
+  const dots = document.querySelectorAll('#dots .dot');
+  const sceneNameEl = document.getElementById('sceneName');
+  const shareBtn = document.getElementById('shareBtn');
+
+  // Track current scene via IntersectionObserver
+  let currentIndex = 0;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+        const i = Array.from(scenes).indexOf(entry.target);
+        if (i !== -1) {
+          currentIndex = i;
+          dots.forEach((d, idx) => d.classList.toggle('is-active', idx === i));
+          sceneNameEl.textContent = entry.target.dataset.name || '';
+        }
+      }
+    });
+  }, { root: carousel, threshold: [0, 0.6, 1] });
+
+  scenes.forEach(s => io.observe(s));
+
+  // Click dots → scroll to scene
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      scenes[i].scrollIntoView({ behavior: 'smooth', inline: 'start' });
+    });
+  });
+
+  // Share
+  shareBtn.addEventListener('click', async () => {
+    const scene = scenes[currentIndex];
+    if (!scene) return;
+    shareBtn.classList.add('is-loading');
+    try {
+      // Render at story resolution
+      const targetW = 1080;
+      const sceneW = scene.offsetWidth;
+      const scale = targetW / sceneW;
+
+      const canvas = await html2canvas(scene, {
+        scale: scale,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#050505',
+        logging: false,
+        windowWidth: sceneW,
+        windowHeight: scene.offsetHeight
+      });
+
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 0.95));
+      const filename = `zaya-${scene.dataset.name.toLowerCase().replace(/\s+/g, '-')}.png`;
+      const file = new File([blob], filename, { type: 'image/png' });
+
+      // Try Web Share with file
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'ZAYA · Antitesi',
+            text: 'ZAYA · Antitesi · Out 8 maggio 2026'
+          });
+          shareBtn.classList.remove('is-loading');
+          return;
+        } catch (err) {
+          // User cancelled or blocked, fall through to download
+          if (err.name === 'AbortError') {
+            shareBtn.classList.remove('is-loading');
+            return;
+          }
+        }
+      }
+
+      // Fallback: download PNG
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert('Errore: ' + err.message);
+    } finally {
+      shareBtn.classList.remove('is-loading');
+    }
+  });
+</script>
+
+</body>
+</html>

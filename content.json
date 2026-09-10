@@ -1,0 +1,19 @@
+{
+  "tagline": "DJ & Producer",
+  "photos": {
+    "profile": "/foto/profile.webp",
+    "hero": "/foto/hero.jpg",
+    "backdrop": "/foto/backdrop.jpg"
+  },
+  "links": {
+    "youtube": "https://www.youtube.com/@antitesi",
+    "spotify": "https://open.spotify.com/artist/10C7ayGjYpyEgKZqymRcO5",
+    "soundcloud": "https://on.soundcloud.com/EO870HYMi6QtEIxAwJ",
+    "tiktok": "https://www.tiktok.com/@antitesi",
+    "instagram": "https://www.instagram.com/danceintoparadise",
+    "instagramHandle": "@danceintoparadise"
+  },
+  "booking": {
+    "email": "contactantitesi@gmail.com"
+  }
+}
