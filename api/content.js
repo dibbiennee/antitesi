@@ -8,8 +8,10 @@ function cleanContent(b) {
   const links = b.links || {};
   const booking = b.booking || {};
   const zaya = b.zaya || {};
+  const bio = b.bio || {};
   return {
     tagline: s(b.tagline),
+    bio: { it: s(bio.it), en: s(bio.en) },
     photos: {
       profile: s(photos.profile),
       hero: s(photos.hero),

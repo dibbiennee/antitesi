@@ -213,6 +213,15 @@
     margin: 0;
   }
 
+  .bio {
+    max-width: 34ch;
+    margin: 10px auto 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
   .live-badge {
     display: inline-flex;
     align-items: center;
@@ -924,6 +933,7 @@
       <span class="sr-only">ANTITESI</span>
     </h1>
     <p class="tagline" data-i18n="tagline">DJ &amp; Producer</p>
+    <p class="bio" id="bio">Antitesi, dj e producer di Roma. House, con set costruiti perché la pista non si fermi. A maggio 2026 è uscito Zaya, su Spotify e sulle altre piattaforme. Suona nei club tra Roma, la costa tirrenica e la Sardegna.</p>
   </header>
 
   <!-- ASCOLTA -->
@@ -1111,8 +1121,18 @@
       const tl = document.querySelector('.tagline');
       if (tl) tl.textContent = SITE.tagline;
     }
+    applyBio();
     loadEvents();
     renderTracks();
+  }
+
+  // La bio sta in content.json, quindi si aggiorna dal pannello senza
+  // toccare la pagina. Se l'API non risponde resta quella nel sorgente.
+  function applyBio() {
+    const el = document.getElementById('bio');
+    if (!el) return;
+    const testo = (SITE.bio || {})[currentLang];
+    if (testo) el.textContent = testo;
   }
 
   // ===== SITE CONTENT (managed from the admin panel) =====
@@ -1166,6 +1186,7 @@
       const tl = document.querySelector('.tagline');
       if (tl) tl.textContent = SITE.tagline;
     }
+    applyBio();
   }
 
   document.querySelectorAll('.lang button').forEach(btn => {
@@ -1209,6 +1230,7 @@
       }
 
       list.innerHTML = upcoming.map(renderEventCard).join('');
+      datiStrutturatiEventi(upcoming);
     } catch (err) {
       list.innerHTML = emptyState;
     }
@@ -1266,6 +1288,64 @@
           </div>
         </div>
       </article>`;
+  }
+
+  // ===== DATI STRUTTURATI DEGLI EVENTI =====
+  // Le date vengono disegnate dal codice, quindi anche la loro descrizione
+  // per i motori va costruita qui. Il passo di costruzione la congela nel
+  // sorgente, cosi' la legge anche chi non esegue JavaScript.
+  function datiStrutturatiEventi(eventi) {
+    const ID = 'eventi-ld';
+    const vecchio = document.getElementById(ID);
+
+    if (!eventi || !eventi.length) {
+      if (vecchio) vecchio.remove();
+      return;
+    }
+
+    const SITO = 'https://antitesi.link/';
+
+    // "Tarquinia (VT)" -> citta' e provincia separate
+    function luogo(e) {
+      const citta = (e.city || '').trim();
+      const m = citta.match(/^(.*?)\s*\(([^)]+)\)$/);
+      const indirizzo = { '@type': 'PostalAddress', addressCountry: 'IT' };
+      if (m) {
+        indirizzo.addressLocality = m[1].trim();
+        indirizzo.addressRegion = m[2].trim();
+      } else if (citta) {
+        indirizzo.addressLocality = citta;
+      }
+      return {
+        '@type': 'Place',
+        name: e.venue || e.title || citta || 'Club',
+        address: indirizzo
+      };
+    }
+
+    const dati = eventi.map(e => {
+      const ev = {
+        '@context': 'https://schema.org',
+        '@type': 'MusicEvent',
+        name: e.title || e.venue || 'Antitesi',
+        startDate: e.date,
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        location: luogo(e),
+        performer: { '@type': 'MusicGroup', name: 'Antitesi', url: SITO },
+        url: e.ig_link || SITO
+      };
+      if (e.endDate) ev.endDate = e.endDate;
+      if (e.poster) ev.image = e.poster;
+      return ev;
+    });
+
+    const el = vecchio || document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = ID;
+    // un "<" dentro un testo chiuderebbe il tag prima del dovuto
+    el.textContent = JSON.stringify(dati, null, 2).replace(/</g, '\\u003c');
+    if (!vecchio) document.head.appendChild(el);
   }
 
   function formatDate(iso) {

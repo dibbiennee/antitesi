@@ -111,8 +111,13 @@
   input[type=text], input[type=date], input[type=email], input[type=url] {
     width: 100%; height: 44px; padding: 0 13px; background: var(--bg2); border: 1.5px solid var(--border);
     border-radius: var(--r-sm); color: var(--text); font-size: 15px; font-family: inherit; }
-  input::placeholder { color: var(--faint); }
-  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,160,63,0.12); }
+  textarea {
+    width: 100%; min-height: 104px; padding: 11px 13px; background: var(--bg2);
+    border: 1.5px solid var(--border); border-radius: var(--r-sm); color: var(--text);
+    font-size: 15px; font-family: inherit; line-height: 1.5; resize: vertical; }
+  input::placeholder, textarea::placeholder { color: var(--faint); }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,160,63,0.12); }
+  .aiuto { margin: 6px 0 0; font-size: 12px; line-height: 1.45; color: var(--faint); }
   input[type=date] { font-family: var(--mono); font-size: 13px; }
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
@@ -299,6 +304,14 @@
       <div class="sec-label">Link & social</div>
       <div class="card card-open">
         <label>Tagline (sotto il nome)</label><input type="text" id="c-tagline" placeholder="DJ &amp; Producer">
+
+        <label>Bio (italiano)</label>
+        <textarea id="c-bio-it" placeholder="Chi è Antitesi, che musica fa, dove suona."></textarea>
+        <p class="aiuto">Tre o quattro righe. È il testo che leggono Google e ChatGPT
+        quando qualcuno chiede di te: scrivilo come lo diresti a voce.</p>
+
+        <label>Bio (inglese)</label>
+        <textarea id="c-bio-en" placeholder="Same text, in English."></textarea>
         <label>YouTube</label><input type="url" id="c-youtube" placeholder="https://youtube.com/@…">
         <label>Spotify (artista)</label><input type="url" id="c-spotify" placeholder="https://open.spotify.com/artist/…">
         <label>SoundCloud</label><input type="url" id="c-soundcloud" placeholder="https://…">
@@ -702,10 +715,11 @@ function renderFoto() {
 
 // ================= CONTENT (link/booking) =================
 function fillContent() {
-  const l = ST.content.links || {}, b = ST.content.booking || {};
+  const l = ST.content.links || {}, b = ST.content.booking || {}, bio = ST.content.bio || {};
   setV('c-tagline', ST.content.tagline); setV('c-youtube', l.youtube); setV('c-spotify', l.spotify);
   setV('c-soundcloud', l.soundcloud); setV('c-tiktok', l.tiktok); setV('c-instagram', l.instagram);
   setV('c-instagramHandle', l.instagramHandle); setV('c-email', b.email);
+  setV('c-bio-it', bio.it); setV('c-bio-en', bio.en);
   renderFoto();
 }
 function gatherContent() {
@@ -713,11 +727,12 @@ function gatherContent() {
   ST.content.links = { youtube: gv('c-youtube'), spotify: gv('c-spotify'), soundcloud: gv('c-soundcloud'),
     tiktok: gv('c-tiktok'), instagram: gv('c-instagram'), instagramHandle: gv('c-instagramHandle') };
   ST.content.booking = { email: gv('c-email') };
+  ST.content.bio = { it: gv('c-bio-it'), en: gv('c-bio-en') };
   ST.content.photos = ST.content.photos || {};
 }
 function setV(id, v) { const el = $(id); if (el && v != null) el.value = v; }
 function gv(id) { const el = $(id); return el ? el.value.trim() : ''; }
-['c-tagline','c-youtube','c-spotify','c-soundcloud','c-tiktok','c-instagram','c-instagramHandle','c-email'].forEach(id => {
+['c-tagline','c-youtube','c-spotify','c-soundcloud','c-tiktok','c-instagram','c-instagramHandle','c-email','c-bio-it','c-bio-en'].forEach(id => {
   document.addEventListener('input', e => { if (e.target.id === id) { gatherContent(); updateDirtyUI(); } });
 });
 
