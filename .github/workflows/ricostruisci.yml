@@ -1,0 +1,50 @@
+# Rifa' la costruzione del sito e pubblica se qualcosa e' cambiato.
+#
+# Serve perche' le date stanno su Vercel Blob: quando Antitesi ne aggiunge
+# una dal pannello, le persone la vedono subito (la disegna il codice), ma
+# il sorgente salvato no, e nemmeno i dati strutturati. Senza questo passo
+# i crawler continuerebbero a leggere "nessuna data in programma".
+#
+# Si puo' lanciare a mano:  gh workflow run ricostruisci.yml
+
+name: Ricostruisci il sorgente
+
+on:
+  workflow_dispatch:          # a mano, da GitHub o da gh
+  repository_dispatch:        # dal pannello, quando salva le date
+    types: [date-aggiornate]
+  schedule:
+    - cron: '17 4 * * *'      # ogni notte alle 4:17 UTC, rete permettendo
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ricostruisci
+  cancel-in-progress: true
+
+jobs:
+  costruisci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verifica che Chrome ci sia
+        run: google-chrome --version
+
+      - name: Costruisci
+        run: python3 strumenti/costruisci.py
+
+      - name: Pubblica se e' cambiato qualcosa
+        run: |
+          if git diff --quiet; then
+            echo "Nessuna differenza: il sorgente era gia' aggiornato."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Ricostruzione automatica del sorgente" \
+                     -m "Rifatta la resa della home con le date prese dall'API. Il deploy su Vercel parte da solo con questo push."
+          git push
+          echo "Pubblicato."

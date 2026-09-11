@@ -25,6 +25,7 @@ import http.server
 import io
 import os
 import re
+import shutil
 import socket
 import subprocess
 import sys
@@ -35,7 +36,29 @@ import urllib.request
 RADICE = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
-CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+def trova_chrome():
+    """Sul Mac sta nelle Applicazioni, sui runner di GitHub si chiama
+    google-chrome ed e' nel percorso. La variabile CHROME ha la
+    precedenza, per i casi che non prevediamo."""
+    import shutil
+    scelto = os.environ.get('CHROME')
+    if scelto:
+        return scelto
+    candidati = [
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    ]
+    for c in candidati:
+        if os.path.isfile(c):
+            return c
+    for nome in ('google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser'):
+        trovato = shutil.which(nome)
+        if trovato:
+            return trovato
+    return candidati[0]
+
+
+CHROME = trova_chrome()
 
 # I dati veri stanno su Vercel Blob, non nei file del repo: durante la
 # costruzione le chiamate all'API vengono inoltrate alla produzione.
@@ -174,8 +197,8 @@ def controlla(html, testo):
 def main():
     prova = '--prova' in sys.argv
 
-    if not os.path.isfile(CHROME):
-        raise SystemExit('Chrome non trovato in %s' % CHROME)
+    if not (os.path.isfile(CHROME) or shutil.which(CHROME)):
+        raise SystemExit('Chrome non trovato (%s). Indicalo con la variabile CHROME.' % CHROME)
 
     porta = porta_libera()
     servitore = http.server.ThreadingHTTPServer(
