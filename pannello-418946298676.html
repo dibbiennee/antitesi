@@ -505,7 +505,7 @@ async function doSave() {
   btn.querySelector('.dot').outerHTML = '<span class="spinner"></span>';
   const domain = DOMAIN[activeTab];
   try {
-    if (domain === 'events') { const r = await api('/api/events', 'POST', serializeEvents()); BASE.events = clone(ST.events); toast(`Pubblicato ✓ — ${r.count} date online`, false, true); }
+    if (domain === 'events') { const r = await api('/api/events', 'POST', serializeEvents()); BASE.events = clone(ST.events); toast(`Pubblicato ✓ — ${r.count} date online`, false, true); ricostruisci(); }
     else if (domain === 'tracks') { const r = await api('/api/tracks', 'POST', serializeTracks()); BASE.tracks = clone(ST.tracks); toast(`Pubblicato ✓ — ${r.count} tracce online`, false, true); }
     else { await api('/api/content', 'POST', ST.content); BASE.content = clone(ST.content); toast('Pubblicato ✓ — contenuti online', false, true); }
     saveBusy = false;
@@ -515,6 +515,24 @@ async function doSave() {
     saveBusy = false;
     btn.innerHTML = '<span class="dot"></span><span id="saveTxt">Salva</span>';
     toast('Errore: ' + err.message, true); updateSaveBar();
+  }
+}
+
+
+// Le date salvate finiscono su Blob, ma il sorgente della home va rifatto
+// perche' Google e le AI le leggano. Ci pensa un workflow su GitHub: qui lo
+// sveglio e basta. Se non risponde non e' un errore del salvataggio, le date
+// sono gia' online: lo dico soltanto.
+async function ricostruisci() {
+  try {
+    const r = await fetch('/api/ricostruisci', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + TOKEN },
+    });
+    if (r.status === 501) return;      // non ancora configurato, silenzio
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+  } catch (_) {
+    setTimeout(() => toast('Date online. Il sorgente per i motori si aggiorna piu\u2019 tardi.', false), 3000);
   }
 }
 
