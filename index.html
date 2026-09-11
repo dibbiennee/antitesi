@@ -901,31 +901,7 @@
     outline-offset: 2px;
   }
 </style>
-<script type="application/ld+json" id="eventi-ld">[
-  {
-    "@context": "https://schema.org",
-    "@type": "MusicEvent",
-    "name": "Zuma",
-    "startDate": "2026-10-11",
-    "eventStatus": "https://schema.org/EventScheduled",
-    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-    "location": {
-      "@type": "Place",
-      "name": "Zuma",
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "IT",
-        "addressLocality": "Roma"
-      }
-    },
-    "performer": {
-      "@type": "MusicGroup",
-      "name": "Antitesi",
-      "url": "https://antitesi.link/"
-    },
-    "url": "https://antitesi.link/"
-  }
-]</script></head>
+</head>
 <body>
 
 <main>
@@ -1250,6 +1226,7 @@
 
       if (upcoming.length === 0) {
         list.innerHTML = emptyState;
+        datiStrutturatiEventi([]);
         return;
       }
 
@@ -1257,6 +1234,9 @@
       datiStrutturatiEventi(upcoming);
     } catch (err) {
       list.innerHTML = emptyState;
+      // se la pagina dice che non ci sono date, non devono dirlo
+      // nemmeno i dati strutturati: meglio niente che una serata falsa
+      datiStrutturatiEventi([]);
     }
   }
 
