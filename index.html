@@ -1029,7 +1029,7 @@
       <span class="sr-only">ANTITESI</span>
     </h1>
     <p class="tagline" data-i18n="tagline">DJ &amp; Producer</p>
-    <p class="bio" id="bio">Antitesi, dj e producer di Roma. House, con set costruiti perché la pista non si fermi. A maggio 2026 è uscito Zaya, su Spotify e sulle altre piattaforme. Suona nei club tra Roma, la costa tirrenica e la Sardegna.</p>
+    <p class="bio" id="bio" hidden=""></p>
   </header>
 
   <!-- ASCOLTA -->
@@ -1284,11 +1284,26 @@
     const el = document.getElementById('bio');
     if (!el) return;
     const testo = (SITE.bio || {})[currentLang];
-    if (testo) el.textContent = testo;
+
+    if (testo) {
+      el.textContent = testo;
+      el.hidden = false;
+      return;
+    }
+
+    // Se l'API ha risposto e la bio e' vuota, il blocco sparisce: altrimenti
+    // resterebbe visibile il testo fissato nel sorgente dall'ultima
+    // costruzione. Finche' l'API non ha risposto non si tocca niente, cosi'
+    // una rete lenta non fa sparire la bio a chi sta leggendo.
+    if (SITE_CARICATO) {
+      el.textContent = '';
+      el.hidden = true;
+    }
   }
 
   // ===== SITE CONTENT (managed from the admin panel) =====
   let SITE = {};
+  let SITE_CARICATO = false;
   let TRACKS = null;
   function setAttrIf(sel, attr, val) {
     if (!val) return;
@@ -1303,6 +1318,7 @@
       const res = await fetch('/api/content', { cache: 'no-store' });
       if (!res.ok) return;
       SITE = (await res.json()) || {};
+      SITE_CARICATO = true;
     } catch (_) { return; }
 
     const p = SITE.photos || {};
