@@ -508,9 +508,12 @@ async function doSave() {
   btn.querySelector('.dot').outerHTML = '<span class="spinner"></span>';
   const domain = DOMAIN[activeTab];
   try {
-    if (domain === 'events') { const r = await api('/api/events', 'POST', serializeEvents()); BASE.events = clone(ST.events); toast(`Pubblicato ✓ — ${r.count} date online`, false, true); ricostruisci(); }
+    if (domain === 'events') { const r = await api('/api/events', 'POST', serializeEvents()); BASE.events = clone(ST.events); toast(`Pubblicato ✓ — ${r.count} date online`, false, true); }
     else if (domain === 'tracks') { const r = await api('/api/tracks', 'POST', serializeTracks()); BASE.tracks = clone(ST.tracks); toast(`Pubblicato ✓ — ${r.count} tracce online`, false, true); }
     else { await api('/api/content', 'POST', ST.content); BASE.content = clone(ST.content); toast('Pubblicato ✓ — contenuti online', false, true); }
+    // vale per qualunque salvataggio: anche una bio o un link cambiato
+    // deve finire nel sorgente, non solo le date
+    ricostruisci();
     saveBusy = false;
     btn.className = 'save-btn saved'; btn.innerHTML = '<span>Salvato ✓</span>';
     setTimeout(() => { btn.innerHTML = '<span class="dot"></span><span id="saveTxt">Salva</span>'; updateDirtyUI(); }, 1400);
