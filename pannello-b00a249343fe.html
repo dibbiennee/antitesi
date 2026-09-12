@@ -542,8 +542,17 @@ async function tokenValido(t) {
   if (!t) return false;
   try {
     const r = await fetch('/api/auth', { headers: { Authorization: 'Bearer ' + t }, cache: 'no-store' });
+    if (r.status === 429) {
+      // troppi tentativi sbagliati: chi ha davvero dimenticato la password
+      // deve sapere che aspetta, non che l'ha scritta male di nuovo
+      const d = await r.json().catch(() => ({}));
+      const e = new Error('bloccato');
+      e.attesa = d.attesa || 0;
+      throw e;
+    }
     return r.ok;
-  } catch (_) {
+  } catch (e) {
+    if (e && e.message === 'bloccato') throw e;
     return false;
   }
 }
@@ -556,7 +565,8 @@ async function tokenValido(t) {
   const err = document.getElementById('gateErr');
 
   const salvato = sessionStorage.getItem(TOKEN_KEY) || '';
-  if (await tokenValido(salvato)) {
+  const valido = await tokenValido(salvato).catch(() => false);
+  if (valido) {
     TOKEN = salvato;
     boot();
     return;
@@ -574,18 +584,23 @@ async function tokenValido(t) {
     btn.textContent = 'Verifico…';
     err.textContent = '';
 
-    if (await tokenValido(val)) {
-      sessionStorage.setItem(TOKEN_KEY, val);
-      TOKEN = val;
-      gate.hidden = true;
-      boot();
-      return;
+    try {
+      if (await tokenValido(val)) {
+        sessionStorage.setItem(TOKEN_KEY, val);
+        TOKEN = val;
+        gate.hidden = true;
+        boot();
+        return;
+      }
+      err.textContent = 'Password non valida';
+      pwd.select();
+    } catch (e) {
+      const minuti = Math.ceil((e.attesa || 600) / 60);
+      err.textContent = 'Troppi tentativi. Riprova fra ' + minuti + (minuti === 1 ? ' minuto.' : ' minuti.');
     }
 
     btn.disabled = false;
     btn.textContent = 'Entra';
-    err.textContent = 'Password non valida';
-    pwd.select();
   });
 })();
 
