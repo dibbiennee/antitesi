@@ -67,7 +67,12 @@ export async function readJson(pathname, fallbackPath, req) {
     const { blobs } = await list({ prefix: pathname, limit: 10 });
     const hit = blobs.find(b => b.pathname === pathname);
     if (hit) {
-      const r = await fetch(hit.url, { cache: 'no-store' });
+      // L'indirizzo del blob passa da una cache che resta indietro di una
+      // trentina di secondi: chi salva e ricarica subito rivede il valore
+      // vecchio, e il pannello poi lo riscrive cancellando la modifica.
+      // Una chiave diversa a ogni richiesta salta la cache.
+      const senzaCache = hit.url + (hit.url.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      const r = await fetch(senzaCache, { cache: 'no-store' });
       if (r.ok) return await r.json();
     }
   } catch (_) { /* ignore, try fallback */ }
