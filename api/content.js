@@ -1,5 +1,23 @@
 import { authed, readJson, writeJson, readBody } from './_lib.js';
 
+// Unisce quello che arriva con quello gia' salvato.
+//
+// Serve perche' un pannello che non conosce un campo non deve distruggerlo:
+// e' successo con la bio, salvata da una versione del pannello che non
+// aveva ancora quei campi e azzerata di conseguenza. Chi manda un campo
+// vince, anche per svuotarlo; chi non lo manda lascia le cose come stanno.
+function unisci(precedente, arrivato) {
+  const out = { ...(precedente || {}) };
+  for (const [chiave, valore] of Object.entries(arrivato || {})) {
+    if (valore && typeof valore === 'object' && !Array.isArray(valore)) {
+      out[chiave] = { ...(out[chiave] || {}), ...valore };
+    } else {
+      out[chiave] = valore;
+    }
+  }
+  return out;
+}
+
 // Whitelisted shape so the panel can only set known fields.
 function cleanContent(b) {
   b = b || {};
@@ -47,7 +65,8 @@ export default async function handler(req, res) {
     if (!authed(req)) return res.status(401).json({ error: 'unauthorized' });
     const body = readBody(req);
     if (!body || typeof body !== 'object') return res.status(400).json({ error: 'expected object' });
-    const clean = cleanContent(body);
+    const precedente = await readJson('data/content.json', '/content.json', req);
+    const clean = cleanContent(unisci(precedente, body));
     await writeJson('data/content.json', clean);
     return res.status(200).json({ ok: true });
   }
