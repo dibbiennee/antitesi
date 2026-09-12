@@ -513,6 +513,7 @@ async function doSave() {
     else { await api('/api/content', 'POST', ST.content); BASE.content = clone(ST.content); toast('Pubblicato ✓ — contenuti online', false, true); }
     // vale per qualunque salvataggio: anche una bio o un link cambiato
     // deve finire nel sorgente, non solo le date
+    ricordaSalvataggio();
     ricostruisci();
     saveBusy = false;
     btn.className = 'save-btn saved'; btn.innerHTML = '<span>Salvato ✓</span>';
@@ -539,6 +540,37 @@ async function ricostruisci() {
     if (!r.ok) throw new Error('HTTP ' + r.status);
   } catch (_) {
     setTimeout(() => toast('Date online. Il sorgente per i motori si aggiorna piu\u2019 tardi.', false), 3000);
+  }
+}
+
+
+// ---------- memoria dell'ultimo salvataggio ----------
+// Serve solo a coprire i secondi in cui la lettura torna indietro nel
+// tempo: passato un minuto ci si fida di nuovo di quello che dice l'API.
+const CHIAVE_SALVATAGGIO = 'antitesi_ultimo_salvataggio';
+const VALIDITA = 60000;
+
+function ricordaSalvataggio() {
+  try {
+    sessionStorage.setItem(CHIAVE_SALVATAGGIO, JSON.stringify({
+      quando: Date.now(),
+      content: ST.content, events: ST.events, tracks: ST.tracks,
+    }));
+  } catch (_) {}
+}
+
+function ultimoSalvataggio() {
+  try {
+    const grezzo = sessionStorage.getItem(CHIAVE_SALVATAGGIO);
+    if (!grezzo) return null;
+    const d = JSON.parse(grezzo);
+    if (!d || (Date.now() - d.quando) > VALIDITA) {
+      sessionStorage.removeItem(CHIAVE_SALVATAGGIO);
+      return null;
+    }
+    return d;
+  } catch (_) {
+    return null;
   }
 }
 
@@ -818,6 +850,18 @@ async function boot() {
     ST.events = Array.isArray(ev) ? ev : [];
     ST.content = ct && typeof ct === 'object' ? ct : {};
     ST.tracks = Array.isArray(tr) ? tr : [];
+
+    // Le letture dal Blob restano indietro di una decina di secondi. Se ho
+    // appena salvato e ricarico, l'API mi ridarebbe il valore vecchio, i
+    // campi si riempirebbero con quello e il salvataggio dopo cancellerebbe
+    // la modifica. Per un minuto la mia copia vale piu' di quella letta.
+    const appena = ultimoSalvataggio();
+    if (appena) {
+      if (appena.content) ST.content = appena.content;
+      if (appena.events) ST.events = appena.events;
+      if (appena.tracks) ST.tracks = appena.tracks;
+      toast('Mostro le ultime modifiche salvate da te', false);
+    }
     BASE.events = clone(ST.events); BASE.content = clone(ST.content); BASE.tracks = clone(ST.tracks);
     renderEvents(); renderTracks(); fillContent();
     setStatus('ready', 'pronto'); updateDirtyUI();
