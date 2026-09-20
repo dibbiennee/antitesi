@@ -1,4 +1,4 @@
-import { authed, readJson, writeJson, readBody } from './_lib.js';
+import { authed, leggiJson, scriviJson, readBody } from './_lib.js';
 
 const str = v => (v == null ? '' : String(v).trim());
 
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'GET') {
-    const data = await readJson('data/events.json', '/events.json', req);
+    const data = await leggiJson('events.json', req);
     return res.status(200).json(Array.isArray(data) ? data : []);
   }
 
@@ -28,7 +28,8 @@ export default async function handler(req, res) {
     const body = readBody(req);
     if (!Array.isArray(body)) return res.status(400).json({ error: 'expected array of events' });
     const clean = body.map(cleanEvent).filter(Boolean);
-    await writeJson('data/events.json', clean);
+    await scriviJson('events.json', clean,
+      'Aggiorna date dal pannello');
     return res.status(200).json({ ok: true, count: clean.length });
   }
 

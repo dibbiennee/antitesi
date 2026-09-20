@@ -8,17 +8,17 @@
   {
     "date": "2026-06-04",
     "title": "Zuma",
-    "city": "Roma"
+    "city": "Rome"
   },
   {
     "date": "2026-06-07",
     "title": "Zuma",
-    "city": "Roma"
+    "city": "Rome"
   },
   {
     "date": "2026-06-21",
     "title": "Zuma",
-    "city": "Roma"
+    "city": "Rome"
   },
   {
     "date": "2026-06-28",
@@ -30,5 +30,25 @@
     "endDate": "2026-07-31",
     "venue": "Zuma",
     "city": "Porto Cervo (SS)"
+  },
+  {
+    "date": "2026-09-14",
+    "title": "Zuma",
+    "city": "Rome"
+  },
+  {
+    "date": "2026-09-17",
+    "title": "Zuma",
+    "city": "Rome"
+  },
+  {
+    "date": "2026-09-20",
+    "title": "Zuma",
+    "city": "Rome"
+  },
+  {
+    "date": "2026-09-21",
+    "title": "Zuma",
+    "city": "Rome"
   }
 ]

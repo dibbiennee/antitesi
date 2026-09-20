@@ -1,4 +1,4 @@
-import { authed, readJson, writeJson, readBody } from './_lib.js';
+import { authed, leggiJson, scriviJson, readBody } from './_lib.js';
 
 const str = v => (v == null ? '' : String(v).trim());
 const slug = s => str(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'GET') {
-    const data = await readJson('data/tracks.json', '/tracks.json', req);
+    const data = await leggiJson('tracks.json', req);
     return res.status(200).json(Array.isArray(data) ? data : []);
   }
 
@@ -27,7 +27,8 @@ export default async function handler(req, res) {
     const body = readBody(req);
     if (!Array.isArray(body)) return res.status(400).json({ error: 'expected array of tracks' });
     const clean = body.map(cleanTrack).filter(Boolean);
-    await writeJson('data/tracks.json', clean);
+    await scriviJson('tracks.json', clean,
+      'Aggiorna tracce dal pannello');
     return res.status(200).json({ ok: true, count: clean.length });
   }
 

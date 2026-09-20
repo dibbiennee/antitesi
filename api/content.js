@@ -1,4 +1,4 @@
-import { authed, readJson, writeJson, readBody } from './_lib.js';
+import { authed, leggiJson, scriviJson, readBody } from './_lib.js';
 
 // Unisce quello che arriva con quello gia' salvato.
 //
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'GET') {
-    const data = await readJson('data/content.json', '/content.json', req);
+    const data = await leggiJson('content.json', req);
     return res.status(200).json(data && typeof data === 'object' ? data : {});
   }
 
@@ -65,9 +65,10 @@ export default async function handler(req, res) {
     if (!authed(req)) return res.status(401).json({ error: 'unauthorized' });
     const body = readBody(req);
     if (!body || typeof body !== 'object') return res.status(400).json({ error: 'expected object' });
-    const precedente = await readJson('data/content.json', '/content.json', req);
+    const precedente = await leggiJson('content.json', req);
     const clean = cleanContent(unisci(precedente, body));
-    await writeJson('data/content.json', clean);
+    await scriviJson('content.json', clean,
+      'Aggiorna contenuti dal pannello');
     return res.status(200).json({ ok: true });
   }
 

@@ -32,15 +32,6 @@ jobs:
       - name: Verifica che Chrome ci sia
         run: google-chrome --version
 
-      # Quando la sveglia arriva dal pannello, la data appena salvata puo'
-      # non essere ancora leggibile: le letture dal Blob restano indietro
-      # di qualche decina di secondi. Senza questa attesa la costruzione
-      # userebbe i dati vecchi, non troverebbe differenze, e il sorgente
-      # resterebbe fermo fino alla notte.
-      - name: Aspetta che il Blob abbia propagato
-        if: github.event_name == 'repository_dispatch'
-        run: sleep 75
-
       - name: Costruisci
         run: python3 strumenti/costruisci.py
 
@@ -55,5 +46,8 @@ jobs:
           git add -A
           git commit -m "Ricostruzione automatica del sorgente" \
                      -m "Rifatta la resa della home con le date prese dall'API. Il deploy su Vercel parte da solo con questo push."
+          # il pannello scrive i dati come commit: se ne e' arrivato uno
+          # mentre costruivamo, ci si accoda invece di fallire
+          git pull --rebase origin main
           git push
           echo "Pubblicato."

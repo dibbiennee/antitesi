@@ -1,5 +1,3 @@
-import { list, put } from '@vercel/blob';
-
 // Blocco dei tentativi.
 //
 // Chi sbaglia la password piu' di TENTATIVI_MAX volte resta fuori fino a
@@ -61,40 +59,96 @@ export function authed(req) {
   return false;
 }
 
-// Read a JSON blob; fall back to a static file served by the site if missing.
-export async function readJson(pathname, fallbackPath, req) {
-  try {
-    const { blobs } = await list({ prefix: pathname, limit: 10 });
-    const hit = blobs.find(b => b.pathname === pathname);
-    if (hit) {
-      // L'indirizzo del blob passa da una cache che resta indietro di una
-      // trentina di secondi: chi salva e ricarica subito rivede il valore
-      // vecchio, e il pannello poi lo riscrive cancellando la modifica.
-      // Una chiave diversa a ogni richiesta salta la cache.
-      const senzaCache = hit.url + (hit.url.includes('?') ? '&' : '?') + 'v=' + Date.now();
-      const r = await fetch(senzaCache, { cache: 'no-store' });
-      if (r.ok) return await r.json();
-    }
-  } catch (_) { /* ignore, try fallback */ }
+// ============================================================
+// ARCHIVIO: i dati stanno nel repo, non in un magazzino esterno
+// ============================================================
+//
+// Prima vivevano su Vercel Blob. Ogni lettura faceva una list(), che Vercel
+// conta come "operazione avanzata": tre per ogni visitatore del sito, con
+// 2.000 al mese incluse nel piano. Il 18 settembre il magazzino e' stato
+// sospeso e il pannello ha smesso di salvare.
+//
+// Sono tre file di testo per 3 KB scarsi. Stanno meglio nel repo: leggerli
+// non costa niente, scriverli e' un commit, e ogni modifica resta nello
+// storico, quindi una cancellazione si recupera.
 
-  if (fallbackPath && req) {
-    try {
-      const proto = req.headers['x-forwarded-proto'] || 'https';
-      const r = await fetch(`${proto}://${req.headers.host}${fallbackPath}`, { cache: 'no-store' });
-      if (r.ok) return await r.json();
-    } catch (_) { /* ignore */ }
-  }
+const REPO = 'dibbiennee/antitesi';
+const RAMO = 'main';
+
+function gettone() {
+  const g = process.env.TOKEN_GITHUB_DISPATCH;
+  if (!g) throw new Error('manca TOKEN_GITHUB_DISPATCH fra le variabili del progetto');
+  return g;
+}
+
+function intestazioni() {
+  return {
+    Authorization: `Bearer ${gettone()}`,
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'antitesi-api',
+  };
+}
+
+// Lettura: il file e' gia' servito dal sito, quindi lo si prende da li'.
+// Costa zero e non tocca nessun limite. Dopo un salvataggio resta indietro
+// il tempo del deploy, una trentina di secondi: per quella finestra il
+// pannello preferisce la copia che ha appena scritto.
+export async function leggiJson(percorso, req) {
+  try {
+    const proto = req.headers['x-forwarded-proto'] || 'https';
+    const r = await fetch(`${proto}://${req.headers.host}/${percorso}`, { cache: 'no-store' });
+    if (r.ok) return await r.json();
+  } catch (_) { /* si prova GitHub */ }
+
+  // Ripiego: direttamente dal repo, se il sito non sa rispondere a se stesso.
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${REPO}/contents/${percorso}?ref=${RAMO}`,
+      { headers: intestazioni(), cache: 'no-store' });
+    if (r.ok) {
+      const d = await r.json();
+      return JSON.parse(Buffer.from(d.content, 'base64').toString('utf8'));
+    }
+  } catch (_) { /* niente */ }
+
   return null;
 }
 
-export async function writeJson(pathname, data) {
-  return put(pathname, JSON.stringify(data, null, 2), {
-    access: 'public',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: 'application/json',
-    cacheControlMaxAge: 0,
-  });
+async function shaAttuale(percorso) {
+  const r = await fetch(
+    `https://api.github.com/repos/${REPO}/contents/${percorso}?ref=${RAMO}`,
+    { headers: intestazioni(), cache: 'no-store' });
+  if (r.status === 404) return null;         // file nuovo
+  if (!r.ok) throw new Error(`GitHub ha risposto ${r.status} leggendo ${percorso}`);
+  return (await r.json()).sha;
+}
+
+// Scrittura: un commit. Se nel frattempo qualcun altro ha scritto lo stesso
+// file, GitHub rifiuta con 409: si rilegge e si riprova una volta sola.
+export async function scriviFile(percorso, contenutoBase64, messaggio) {
+  for (let tentativo = 0; tentativo < 2; tentativo++) {
+    const sha = await shaAttuale(percorso);
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${percorso}`, {
+      method: 'PUT',
+      headers: { ...intestazioni(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: messaggio,
+        content: contenutoBase64,
+        branch: RAMO,
+        ...(sha ? { sha } : {}),
+      }),
+    });
+
+    if (r.ok) return await r.json();
+    if (r.status === 409 && tentativo === 0) continue;   // scritture incrociate
+    throw new Error(`GitHub ha risposto ${r.status} scrivendo ${percorso}: ${(await r.text()).slice(0, 200)}`);
+  }
+}
+
+export async function scriviJson(percorso, dati, messaggio) {
+  const testo = JSON.stringify(dati, null, 2) + '\n';
+  return scriviFile(percorso, Buffer.from(testo, 'utf8').toString('base64'), messaggio);
 }
 
 export function readBody(req) {

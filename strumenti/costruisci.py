@@ -16,8 +16,9 @@ aggiornate al giorno in cui si guarda.
     python3 strumenti/costruisci.py
     python3 strumenti/costruisci.py --prova    (non salva, mostra soltanto)
 
-Da rilanciare prima di ogni pubblicazione, e ogni volta che si cambiano le
-date dal pannello: quelle finiscono su Blob, non nel sorgente salvato qui.
+Da rilanciare prima di ogni pubblicazione. Le date salvate dal pannello
+diventano un commit sui file JSON del repo, quindi qui si legge gia' tutto
+dai file locali: non serve niente di online.
 """
 
 import functools
@@ -30,8 +31,6 @@ import socket
 import subprocess
 import sys
 import threading
-import urllib.error
-import urllib.request
 
 RADICE = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
@@ -60,10 +59,6 @@ def trova_chrome():
 
 CHROME = trova_chrome()
 
-# I dati veri stanno su Vercel Blob, non nei file del repo: durante la
-# costruzione le chiamate all'API vengono inoltrate alla produzione.
-PRODUZIONE = 'https://antitesi.link'
-
 # indirizzo -> file da riscrivere
 PAGINE = [('/', 'index.html')]
 
@@ -71,7 +66,7 @@ MINIMO = 300          # caratteri di testo che devono comparire nel sorgente
 
 
 # ------------------------------------------------------------------ #
-# server di appoggio: si comporta come Vercel con cleanUrls e inoltra l'API
+# server di appoggio: si comporta come Vercel con cleanUrls
 # ------------------------------------------------------------------ #
 
 class Servitore(http.server.SimpleHTTPRequestHandler):
@@ -86,31 +81,12 @@ class Servitore(http.server.SimpleHTTPRequestHandler):
             return p + '.html'
         return p
 
-    def do_GET(self):
-        if self.path.startswith('/api/'):
-            return self.inoltra()
-        return super().do_GET()
-
-    def inoltra(self):
-        """Gira la richiesta alla produzione, cosi' il sorgente salvato
-        contiene i dati veri e non quelli fermi nei file del repo."""
-        try:
-            with urllib.request.urlopen(PRODUZIONE + self.path, timeout=20) as r:
-                corpo, tipo, codice = r.read(), r.headers.get('Content-Type', ''), r.status
-        except urllib.error.HTTPError as e:
-            corpo, tipo, codice = e.read(), 'application/json', e.code
-        except Exception as e:
-            print('  API non raggiungibile (%s): %s' % (self.path, e))
-            corpo, tipo, codice = b'{}', 'application/json', 502
-
-        self.send_response(codice)
-        self.send_header('Content-Type', tipo or 'application/json')
-        self.send_header('Content-Length', str(len(corpo)))
-        self.end_headers()
-        self.wfile.write(corpo)
-
     def log_message(self, *a):
         pass
+
+    # Niente inoltro all'API: i dati stanno nei file del repo, e la pagina
+    # ci ripiega da sola quando /api/ non risponde. Costruire e' quindi
+    # completamente locale, senza dipendere dal sito online.
 
 
 def porta_libera():
@@ -204,7 +180,7 @@ def main():
     servitore = http.server.ThreadingHTTPServer(
         ('127.0.0.1', porta), functools.partial(Servitore, directory=RADICE))
     threading.Thread(target=servitore.serve_forever, daemon=True).start()
-    print('server di appoggio sulla porta %d, API inoltrata a %s' % (porta, PRODUZIONE))
+    print('server di appoggio sulla porta %d (dati dai file del repo)' % porta)
 
     problemi = []
     try:
