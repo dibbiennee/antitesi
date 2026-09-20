@@ -1,9 +1,14 @@
 {
   "tagline": "DJ & Producer",
+  "bio": {
+    "it": "",
+    "en": ""
+  },
   "photos": {
     "profile": "/foto/profile.webp",
     "hero": "/foto/hero.jpg",
-    "backdrop": "/foto/backdrop.jpg"
+    "backdrop": "/foto/backdrop.jpg",
+    "zayaCover": ""
   },
   "links": {
     "youtube": "https://www.youtube.com/@antitesi",
@@ -16,8 +21,9 @@
   "booking": {
     "email": "contactantitesi@gmail.com"
   },
-  "bio": {
-    "it": "",
-    "en": ""
+  "zaya": {
+    "title": "PROVA-SCRITTURA",
+    "albumUrl": "",
+    "clipUrl": ""
   }
 }
