@@ -1078,12 +1078,12 @@
         <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M7 7h10v10"></path></svg>
       </a>
 
-      <a class="platform platform--featured" href="https://open.spotify.com/album/3QL1zd4AfwzB54SypobBX7" target="_blank" rel="noopener" data-zaya="album">
+      <a class="platform platform--featured" href="https://soundcloud.com/filippo-nocchia-974873340/sets/radio-antitesi-1" target="_blank" rel="noopener" data-radio="playlist">
         <span class="icon icon--cover">
-          <img src="/zaya/cover.jpg" alt="" width="800" height="800">
+          <img src="/foto/radio-antitesi.jpg" alt="" width="500" height="500">
         </span>
         <span class="featured-stack">
-          <span class="label">Zaya · Antitesi</span>
+          <span class="label">Radio Antitesi</span>
         </span>
         <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M7 7h10v10"></path></svg>
       </a>
@@ -1635,21 +1635,9 @@
     const t = I18N[currentLang];
     const tracks = TRACKS.slice().sort(trackSort);
 
-    // Update the featured tile in the "Ascolta" list with the latest track
-    const featured = document.querySelector('.platform--featured');
-    if (featured) {
-      const top = tracks[0];
-      if (top) {
-        featured.style.display = '';
-        featured.setAttribute('href', top.link || '#');
-        const cov = featured.querySelector('.icon--cover img');
-        if (cov && top.cover) cov.src = top.cover;
-        const lab = featured.querySelector('.label');
-        if (lab) lab.textContent = top.title + ' · Antitesi';
-      } else {
-        featured.style.display = 'none';
-      }
-    }
+    // La scheda in evidenza sotto i social non segue piu' l'ultima traccia:
+    // adesso punta fissa a Radio Antitesi, ed e' scritta nel markup. Il codice
+    // che la riscriveva faceva sparire qualunque modifica al caricamento.
 
     list.innerHTML = tracks.map((tr, i) => {
       const player = tr.clip ? `
