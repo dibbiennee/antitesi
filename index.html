@@ -429,6 +429,36 @@
   .platform--featured:hover .arrow,
   .platform--featured:focus-visible .arrow { color: #000; }
 
+  /* Schede delle tracce: stesse dimensioni di Radio Antitesi */
+  .track-compact { position: relative; }
+  .track-link { text-decoration: none; }
+  .track-link::after { content: ""; position: absolute; inset: 0; }
+  .mini-play {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 160, 63, 0.5);
+    background: rgba(232, 160, 63, 0.12);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+  }
+  .mini-play svg { width: 14px; height: 14px; fill: currentColor; }
+  .mini-play .icon-pause { display: none; }
+  .mini-play.is-playing .icon-play { display: none; }
+  .mini-play.is-playing .icon-pause { display: block; }
+  .track-compact:hover .mini-play,
+  .track-compact:focus-within .mini-play {
+    border-color: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.12);
+    color: #000;
+  }
+
   @keyframes blinkLive {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.35; }
@@ -1160,28 +1190,25 @@
   <!-- TRACCE -->
   <section class="section reveal" id="tracks-section">
     <div class="section-label" data-i18n="releases">Tracce</div>
-    <div id="tracks-list"><article class="coming-soon track-card">
-        <span class="coming-soon-label">Out now</span>
-        <img class="coming-soon-cover" src="/zaya/cover.jpg" alt="Zaya cover" loading="lazy">
-        <div class="coming-soon-title">Zaya</div>
+    <div id="tracks-list"><div class="platform platform--featured track-compact">
+        <span class="icon icon--cover"><img src="/foto/stranger.jpg" alt="" width="600" height="600" loading="lazy"></span>
+        <span class="featured-stack">
+          <a class="label track-link" href="https://open.spotify.com/track/5XRz1r8qzohLCSNePTQZzh" target="_blank" rel="noopener">Stranger</a>
+        </span>
         
-        <div class="preview-player">
-          <button class="preview-play" aria-label="Play preview" type="button">
-            <svg class="icon-play" viewBox="0 0 24 24"><path d="M7 5v14l12-7z"></path></svg>
-            <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>
-          </button>
-          <div class="preview-wave">
-            <div class="preview-bars"></div>
-            <div class="preview-bars preview-bars--accent"></div>
-          </div>
-          <span class="preview-time">0:00</span>
-          <audio preload="none" src="/zaya/zaya-clip.m4a"></audio>
-        </div>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M7 7h10v10"></path></svg>
+      </div><div class="platform platform--featured track-compact">
+        <span class="icon icon--cover"><img src="/zaya/cover.jpg" alt="" width="600" height="600" loading="lazy"></span>
+        <span class="featured-stack">
+          <a class="label track-link" href="https://open.spotify.com/album/3QL1zd4AfwzB54SypobBX7" target="_blank" rel="noopener">Zaya</a>
+        </span>
         
-        <a class="presave-cta" href="https://open.spotify.com/album/3QL1zd4AfwzB54SypobBX7" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.59 14.43c-.19.31-.59.41-.9.21-2.46-1.5-5.55-1.84-9.19-1.01-.36.08-.71-.14-.79-.5-.08-.36.14-.71.5-.79 3.97-.91 7.39-.51 10.15 1.18.31.19.41.59.21.9zm1.23-2.74c-.24.39-.74.51-1.13.27-2.81-1.73-7.09-2.23-10.42-1.21-.43.13-.89-.11-1.02-.54-.13-.43.11-.89.54-1.02 3.81-1.16 8.55-.6 11.78 1.39.39.24.51.74.27 1.13zm.11-2.85c-3.37-2-8.94-2.18-12.16-1.21-.52.16-1.07-.13-1.23-.65-.16-.52.13-1.07.65-1.23 3.7-1.12 9.86-.91 13.74 1.4.46.27.61.87.34 1.33-.27.46-.87.61-1.33.34z"></path></svg><span>Ascolta su Spotify</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M7 7h10v10"></path></svg>
-        </a>
-      </article></div>
+        <button class="mini-play" type="button" aria-label="Play preview" data-clip="/zaya/zaya-clip.m4a">
+          <svg class="icon-play" viewBox="0 0 24 24"><path d="M7 5v14l12-7z"></path></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>
+        </button>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M7 7h10v10"></path></svg>
+      </div></div>
   </section>
 
   <!-- BOOKING -->
@@ -1614,6 +1641,12 @@
   const ARROW_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>';
 
   function trackSort(a, b) {
+    // posizione scelta a mano prima, poi per data
+    const oa = Number(a.ordine) > 0 ? Number(a.ordine) : null;
+    const ob = Number(b.ordine) > 0 ? Number(b.ordine) : null;
+    if (oa && ob) return oa - ob;
+    if (oa) return -1;
+    if (ob) return 1;
     if (a.date && b.date) return new Date(b.date) - new Date(a.date);
     if (a.date) return -1;
     if (b.date) return 1;
@@ -1629,6 +1662,25 @@
     renderTracks();
   }
 
+  // Anteprima dentro la scheda compatta: un tasto che avvia e ferma il clip.
+  // Una sola anteprima per volta, e al termine il tasto torna a "play".
+  function initMiniPlay(btn) {
+    const audio = new Audio();
+    audio.preload = 'none';
+    audio.src = btn.dataset.clip;
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (audio.paused) {
+        document.querySelectorAll('.mini-play.is-playing').forEach(b => b.click());
+        audio.play().then(() => btn.classList.add('is-playing')).catch(() => {});
+      } else {
+        audio.pause();
+        btn.classList.remove('is-playing');
+      }
+    });
+    audio.addEventListener('ended', () => { btn.classList.remove('is-playing'); audio.currentTime = 0; });
+  }
+
   function renderTracks() {
     const list = document.getElementById('tracks-list');
     if (!list || !Array.isArray(TRACKS)) return;
@@ -1639,39 +1691,32 @@
     // adesso punta fissa a Radio Antitesi, ed e' scritta nel markup. Il codice
     // che la riscriveva faceva sparire qualunque modifica al caricamento.
 
-    list.innerHTML = tracks.map((tr, i) => {
-      const player = tr.clip ? `
-        <div class="preview-player">
-          <button class="preview-play" aria-label="Play preview" type="button">
-            <svg class="icon-play" viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></svg>
-            <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
-          </button>
-          <div class="preview-wave">
-            <div class="preview-bars"></div>
-            <div class="preview-bars preview-bars--accent"></div>
-          </div>
-          <span class="preview-time">0:00</span>
-          <audio preload="none" src="${escapeHtml(tr.clip)}"></audio>
-        </div>` : '';
-      const cta = tr.link ? `
-        <a class="presave-cta" href="${escapeHtml(tr.link)}" target="_blank" rel="noopener">
-          ${SPOTIFY_ICON}<span>${escapeHtml(t.listenCta)}</span>${ARROW_ICON}
-        </a>` : '';
-      const cover = tr.cover ? `<img class="coming-soon-cover" src="${escapeHtml(tr.cover)}" alt="${escapeHtml(tr.title)} cover" loading="lazy">` : '';
-      const label = tr.label ? `<span class="coming-soon-label">${escapeHtml(tr.label)}</span>` : '';
-      return `<article class="coming-soon track-card"${i > 0 ? ' style="margin-top:14px"' : ''}>
-        ${label}
+    // Ogni traccia e' una scheda compatta, identica per dimensioni a Radio
+    // Antitesi (stesse classi). La scheda intera e' un link a Spotify tramite
+    // un velo trasparente; il tasto play sta sopra al velo.
+    list.innerHTML = tracks.map((tr) => {
+      const cover = tr.cover
+        ? `<span class="icon icon--cover"><img src="${escapeHtml(tr.cover)}" alt="" width="600" height="600" loading="lazy"></span>`
+        : '';
+      const play = tr.clip ? `
+        <button class="mini-play" type="button" aria-label="Play preview" data-clip="${escapeHtml(tr.clip)}">
+          <svg class="icon-play" viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+        </button>` : '';
+      const nome = tr.link
+        ? `<a class="label track-link" href="${escapeHtml(tr.link)}" target="_blank" rel="noopener">${escapeHtml(tr.title)}</a>`
+        : `<span class="label">${escapeHtml(tr.title)}</span>`;
+      return `<div class="platform platform--featured track-compact">
         ${cover}
-        <div class="coming-soon-title">${escapeHtml(tr.title)}</div>
-        ${player}
-        ${cta}
-      </article>`;
+        <span class="featured-stack">
+          ${nome}
+        </span>
+        ${play}
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </div>`;
     }).join('');
 
-    list.querySelectorAll('.track-card').forEach((card, i) => {
-      const player = card.querySelector('.preview-player');
-      if (player && tracks[i] && tracks[i].clip) initPreviewPlayer(player, tracks[i].clip);
-    });
+    list.querySelectorAll('.mini-play').forEach(initMiniPlay);
   }
 </script>
 

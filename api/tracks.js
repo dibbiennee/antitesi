@@ -11,6 +11,10 @@ function cleanTrack(t, i) {
   if (str(t.cover)) out.cover = str(t.cover);
   if (str(t.link)) out.link = str(t.link);
   if (str(t.clip)) out.clip = str(t.clip);
+  // Posizione scelta a mano: vince sull'ordine per data. Senza questo campo
+  // una traccia piu' vecchia messa in cima tornerebbe sotto al primo salvataggio.
+  const ordine = Number(t.ordine);
+  if (Number.isFinite(ordine) && ordine > 0) out.ordine = Math.floor(ordine);
   return out;
 }
 

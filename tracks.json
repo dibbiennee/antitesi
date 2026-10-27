@@ -1,11 +1,20 @@
 [
   {
+    "id": "stranger",
+    "title": "Stranger",
+    "date": "2024-02-16",
+    "cover": "/foto/stranger.jpg",
+    "link": "https://open.spotify.com/track/5XRz1r8qzohLCSNePTQZzh",
+    "ordine": 1
+  },
+  {
     "id": "zaya",
     "title": "Zaya",
     "label": "Out now",
     "date": "2026-05-08",
     "cover": "/zaya/cover.jpg",
     "link": "https://open.spotify.com/album/3QL1zd4AfwzB54SypobBX7",
-    "clip": "/zaya/zaya-clip.m4a"
+    "clip": "/zaya/zaya-clip.m4a",
+    "ordine": 2
   }
 ]

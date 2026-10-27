@@ -585,6 +585,16 @@ function dateBox(dateStr, endStr) {
 
 // ================= EVENTS =================
 function byDateAsc(a, b) { if (a.date && b.date) return new Date(a.date) - new Date(b.date); if (a.date) return -1; if (b.date) return 1; return 0; }
+// Le tracce con una posizione scelta a mano stanno in cima, in quell'ordine;
+// le altre seguono per data, la piu' recente prima.
+function byTrackOrder(a, b) {
+  const oa = Number(a.ordine) > 0 ? Number(a.ordine) : null;
+  const ob = Number(b.ordine) > 0 ? Number(b.ordine) : null;
+  if (oa && ob) return oa - ob;
+  if (oa) return -1;
+  if (ob) return 1;
+  return byDateDesc(a, b);
+}
 function byDateDesc(a, b) { if (a.date && b.date) return new Date(b.date) - new Date(a.date); if (a.date) return -1; if (b.date) return 1; return 0; }
 
 function renderEvents() {
@@ -658,7 +668,7 @@ $('addEvent').onclick = () => { syncOpenEvent(); ST.events.push({ date: '' }); e
 
 // ================= TRACKS =================
 function renderTracks() {
-  ST.tracks.sort(byDateDesc);
+  ST.tracks.sort(byTrackOrder);
   if (expTrk >= ST.tracks.length) expTrk = ST.tracks.length - 1;
   const c = $('tracks'); c.innerHTML = '';
   $('trackCount').textContent = ST.tracks.length ? `${ST.tracks.length} uscit${ST.tracks.length === 1 ? 'a' : 'e'}` : '';
@@ -709,7 +719,7 @@ function serializeTracks() {
   return ST.tracks.filter(t => t.title).map(t => {
     const o = { title: t.title }; if (t.id) o.id = t.id;
     if (t.label) o.label = t.label; if (t.date) o.date = t.date;
-    if (t.cover) o.cover = t.cover; if (t.link) o.link = t.link; if (t.clip) o.clip = t.clip;
+    if (t.cover) o.cover = t.cover; if (t.link) o.link = t.link; if (t.clip) o.clip = t.clip; if (t.ordine) o.ordine = t.ordine;
     return o;
   });
 }
