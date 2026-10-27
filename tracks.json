@@ -1,18 +1,18 @@
 [
   {
     "id": "stranger",
-    "title": "Stranger",
-    "date": "2024-02-16",
-    "cover": "/foto/stranger.jpg",
-    "link": "https://open.spotify.com/track/5XRz1r8qzohLCSNePTQZzh",
+    "title": "Zaya",
+    "date": "2026-05-08",
+    "cover": "/locandine/f8015123-e032-466a-9b15-c7a2bfff72ba-7t8al9.jpeg",
+    "link": "https://open.spotify.com/album/3QL1zd4AfwzB54SypobBX7",
     "ordine": 1
   },
   {
     "id": "zaya",
-    "title": "Zaya",
-    "date": "2026-05-08",
-    "cover": "/zaya/cover.jpg",
-    "link": "https://open.spotify.com/album/3QL1zd4AfwzB54SypobBX7",
+    "title": "Stranger",
+    "date": "2024-02-16",
+    "cover": "/locandine/Simple_Modern_Photography_Missed_Music_Album_Cover-t1nf6v",
+    "link": "https://open.spotify.com/track/5XRz1r8qzohLCSNePTQZzh?si=9Fg5w21jQ3yVTx5yUukBaQ&utm_source=copy-link",
     "clip": "/zaya/zaya-clip.m4a",
     "ordine": 2
   }
