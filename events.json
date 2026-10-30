@@ -82,6 +82,11 @@
     "city": "Piazza del Popolo (GR)"
   },
   {
+    "date": "2026-10-31",
+    "venue": "Art Cafè",
+    "city": "Rome"
+  },
+  {
     "date": "2026-11-17",
     "venue": "Zuma",
     "city": "Rome"
@@ -94,11 +99,6 @@
   {
     "date": "2026-11-23",
     "venue": "Zuma",
-    "city": "Rome"
-  },
-  {
-    "date": "2026-10-31",
-    "venue": "Art Cafè",
     "city": "Rome"
   }
 ]
