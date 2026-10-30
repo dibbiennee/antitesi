@@ -21,20 +21,15 @@
   "booking": {
     "email": "contactantitesi@gmail.com"
   },
-  "zaya": {
-    "title": "",
-    "albumUrl": "",
-    "clipUrl": ""
-  },
   "radio": {
-    "title": "Radio Antitesi",
+    "title": "Radio TEST",
     "url": "https://soundcloud.com/filippo-nocchia-974873340/sets/radio-antitesi-1",
     "cover": "/foto/radio-antitesi.jpg",
     "visibile": true
   },
   "testi": {
     "it": {
-      "listen": "Ascolta",
+      "listen": "Ascolta TEST",
       "dates": "Prossime date",
       "releases": "Tracce",
       "booking": "Booking",
@@ -55,5 +50,10 @@
       "title": "ANTITESI · DJ & Producer · Rome",
       "description": "Antitesi. House DJ & producer from Rome. Live sets, upcoming dates, booking contacts."
     }
+  },
+  "zaya": {
+    "title": "",
+    "albumUrl": "",
+    "clipUrl": ""
   }
 }
