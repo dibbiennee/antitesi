@@ -22,14 +22,14 @@
     "email": "contactantitesi@gmail.com"
   },
   "radio": {
-    "title": "Radio TEST",
+    "title": "Radio Antitesi",
     "url": "https://soundcloud.com/filippo-nocchia-974873340/sets/radio-antitesi-1",
     "cover": "/foto/radio-antitesi.jpg",
     "visibile": true
   },
   "testi": {
     "it": {
-      "listen": "Ascolta TEST",
+      "listen": "Ascolta",
       "dates": "Prossime date",
       "releases": "Tracce",
       "booking": "Booking",
