@@ -111,7 +111,7 @@
 
   label { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
           text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
-  input[type=text], input[type=date], input[type=email], input[type=url] {
+  input[type=text], input[type=date], input[type=email], input[type=url], input[type=number] {
     width: 100%; height: 44px; padding: 0 13px; background: var(--bg2); border: 1.5px solid var(--border);
     border-radius: var(--r-sm); color: var(--text); font-size: 15px; font-family: inherit; }
   textarea {
@@ -284,6 +284,8 @@
       <button class="tab" data-tab="link">Link</button>
       <button class="tab" data-tab="booking">Booking</button>
       <button class="tab" data-tab="tracce">Tracce</button>
+      <button class="tab" data-tab="radio">Radio</button>
+      <button class="tab" data-tab="testi">Testi</button>
       <button class="tab" data-tab="guida">Guida</button>
     </nav>
   </header>
@@ -341,6 +343,24 @@
       <button class="add-btn" id="addTrack">+ Aggiungi traccia</button>
     </section>
 
+    <section class="panel" id="panel-radio">
+      <div class="sec-label">Radio Antitesi</div>
+      <p class="hint">La scheda con la copertina della radio, sotto i link. Cambia nome, link e immagine, oppure nascondila.</p>
+      <div class="card card-open">
+        <label><input type="checkbox" id="c-radio-visibile" style="width:auto;margin-right:8px">Mostra la scheda sul sito</label>
+        <label>Nome</label><input type="text" id="c-radio-title" placeholder="Radio Antitesi">
+        <label>Link (SoundCloud, Mixcloud, ecc.)</label><input type="url" id="c-radio-url" placeholder="https://…">
+        <label>Copertina</label>
+        <div id="radioCover"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-testi">
+      <div class="sec-label">Testi del sito</div>
+      <p class="hint">Titoli delle sezioni, bottone del booking, messaggio quando non ci sono date, titolo e descrizione che vedono Google e ChatGPT. Un campo lasciato vuoto torna al testo di base.</p>
+      <div id="testiCampi"></div>
+    </section>
+
     <section class="panel guide" id="panel-guida">
       <div class="sec-label">Come si usa</div>
       <div class="card card-open guide">
@@ -352,9 +372,9 @@
           <li>Carica la locandina e i link se vuoi, poi <strong>Salva date</strong>.</li>
         </ol>
         <h4>🎵 Tracce</h4>
-        <ol><li>Titolo, data e copertina, link Spotify ed eventuale clip, poi <strong>Salva tracce</strong>. La più recente va in evidenza sul sito.</li></ol>
-        <h4>📷 Foto · 🔗 Link · ✉️ Booking</h4>
-        <p>Trovi già i valori attuali. Modifica e premi <strong>Salva contenuti</strong>.</p>
+        <ol><li>Titolo, data e copertina, link Spotify ed eventuale clip, poi <strong>Salva tracce</strong>. Con <strong>Posizione</strong> scegli l'ordine (1 = in alto); senza posizione le tracce vanno per data, la più recente prima.</li></ol>
+        <h4>📷 Foto · 🔗 Link · 📻 Radio · ✍️ Testi · ✉️ Booking</h4>
+        <p>Trovi già i valori attuali. Modifica e premi <strong>Salva contenuti</strong>. Se svuoti un link social, la sua scheda sparisce dal sito; rimettilo e torna.</p>
         <h4>⚠️ Importante</h4>
         <p>Salva ogni scheda dopo le modifiche. Questo pannello vive a un <strong>link segreto</strong>: non condividerlo.</p>
       </div>
@@ -420,7 +440,7 @@ let delCtx = null;                  // {kind, idx} during delete confirm
 
 const clone = x => JSON.parse(JSON.stringify(x == null ? null : x));
 const $ = id => document.getElementById(id);
-const DOMAIN = { date: 'events', tracce: 'tracks', foto: 'content', link: 'content', booking: 'content', guida: null };
+const DOMAIN = { date: 'events', tracce: 'tracks', foto: 'content', radio: 'content', testi: 'content', link: 'content', booking: 'content', guida: null };
 
 // ---------- api ----------
 async function api(path, method = 'GET', body) {
@@ -698,6 +718,7 @@ function trackOpen(t, i) {
       <div><label>Etichetta/badge</label><input type="text" data-f="label" value="${esc(t.label)}" placeholder="Es. Out now"></div>
       <div><label>Data uscita</label><input type="date" data-f="date" value="${t.date || ''}"></div>
     </div>
+    <label>Posizione nella lista (1 = in alto, vuoto = per data)</label><input type="number" min="1" step="1" data-f="ordine" value="${t.ordine || ''}" placeholder="Es. 1">
     <label>Copertina</label>${uploadSlot('cover', t.cover, 'IMG')}
     <label>Link streaming</label><input type="url" data-f="link" value="${esc(t.link)}" placeholder="https://open.spotify.com/…">
     <label>Clip audio anteprima (opz.)</label>${uploadSlot('clip', t.clip, '♪', true)}
@@ -713,6 +734,8 @@ function syncOpenTrack() {
   const i = +card.closest('.card').dataset.idx; const t = ST.tracks[i]; if (!t) return;
   const g = f => { const el = card.querySelector(`[data-f="${f}"]`); return el ? el.value.trim() : (t[f] || ''); };
   t.title = g('title'); t.label = g('label'); t.date = g('date'); t.link = g('link');
+  const ord = Math.floor(Number(g('ordine')));
+  if (ord > 0) t.ordine = ord; else delete t.ordine;
 }
 function serializeTracks() {
   syncOpenTrack();
@@ -786,7 +809,45 @@ function fillContent() {
   setV('c-soundcloud', l.soundcloud); setV('c-tiktok', l.tiktok); setV('c-instagram', l.instagram);
   setV('c-instagramHandle', l.instagramHandle); setV('c-email', b.email);
   setV('c-bio-it', bio.it); setV('c-bio-en', bio.en);
-  renderFoto();
+  const r = ST.content.radio || {};
+  setV('c-radio-title', r.title); setV('c-radio-url', r.url);
+  $('c-radio-visibile').checked = r.visibile !== false;
+  renderFoto(); renderRadioCover(); renderTesti();
+}
+
+// ================= RADIO + TESTI =================
+function renderRadioCover() {
+  const url = (ST.content.radio || {}).cover;
+  $('radioCover').innerHTML = `<div class="upl" data-slot="radioCover">
+      <div class="thumb">${url ? `<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">` : 'IMG'}</div>
+      <div class="upl-info"><div class="upl-name">${url ? 'immagine attuale' : 'nessuna immagine'}</div>
+        <div class="upl-actions"><button class="filebtn">${url ? 'Cambia' : 'Carica'}<input type="file" accept="image/*" id="radioCoverIn"></button></div>
+        <div class="progress" data-prog style="display:none"><i></i></div>
+      </div></div>`;
+  $('radioCoverIn').onchange = async (ev) => {
+    const file = ev.target.files[0]; if (!file) return;
+    const prog = $('radioCover').querySelector('[data-prog]'); prog.style.display = 'block';
+    try { gatherContent(); ST.content.radio.cover = await uploadFile(file); renderRadioCover(); updateDirtyUI(); toast('Immagine caricata'); }
+    catch (err) { prog.style.display = 'none'; toast('Errore upload: ' + err.message, true); }
+  };
+}
+const TESTI_CAMPI = [
+  ['listen', 'Titolo sezione link', 0], ['dates', 'Titolo sezione date', 0],
+  ['releases', 'Titolo sezione tracce', 0], ['booking', 'Titolo sezione booking', 0],
+  ['bookingCta', 'Testo del bottone booking', 0],
+  ['emptyDatesTitle', 'Nessuna data: titolo', 0], ['emptyDatesBody', 'Nessuna data: messaggio', 1],
+  ['title', 'Titolo della pagina (browser e Google)', 0], ['description', 'Descrizione per Google', 1],
+];
+function renderTesti() {
+  const t = ST.content.testi || {};
+  $('testiCampi').innerHTML = [['it', 'Italiano'], ['en', 'Inglese']].map(([l, nome]) =>
+    `<div class="sec-label" style="margin-top:18px">${nome}</div><div class="card card-open">` +
+    TESTI_CAMPI.map(([k, lab, lungo]) => {
+      const v = esc((t[l] || {})[k] || '');
+      return `<label>${lab}</label>` + (lungo
+        ? `<textarea data-testo="${l}.${k}">${v}</textarea>`
+        : `<input type="text" data-testo="${l}.${k}" value="${v}">`);
+    }).join('') + `</div>`).join('');
 }
 function gatherContent() {
   ST.content.tagline = gv('c-tagline');
@@ -795,11 +856,21 @@ function gatherContent() {
   ST.content.booking = { email: gv('c-email') };
   ST.content.bio = { it: gv('c-bio-it'), en: gv('c-bio-en') };
   ST.content.photos = ST.content.photos || {};
+  ST.content.radio = { ...(ST.content.radio || {}), title: gv('c-radio-title'), url: gv('c-radio-url'),
+    visibile: $('c-radio-visibile').checked };
+  const testi = { it: {}, en: {} };
+  document.querySelectorAll('[data-testo]').forEach(el => {
+    const [l, k] = el.dataset.testo.split('.'); testi[l][k] = el.value.trim();
+  });
+  if (document.querySelector('[data-testo]')) ST.content.testi = testi;
 }
 function setV(id, v) { const el = $(id); if (el && v != null) el.value = v; }
 function gv(id) { const el = $(id); return el ? el.value.trim() : ''; }
-['c-tagline','c-youtube','c-spotify','c-soundcloud','c-tiktok','c-instagram','c-instagramHandle','c-email','c-bio-it','c-bio-en'].forEach(id => {
-  document.addEventListener('input', e => { if (e.target.id === id) { gatherContent(); updateDirtyUI(); } });
+document.addEventListener('input', e => {
+  if (e.target.closest('#panel-link, #panel-booking, #panel-radio, #panel-testi')) { gatherContent(); updateDirtyUI(); }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'c-radio-visibile') { gatherContent(); updateDirtyUI(); }
 });
 
 // ================= TABS / EXIT GUARD =================

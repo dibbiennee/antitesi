@@ -9,12 +9,12 @@
 
 <meta property="og:type" content="profile">
 <meta property="og:url" content="https://antitesi.vercel.app/">
-<meta property="og:title" content="ANTITESI · DJ House · Roma">
-<meta property="og:description" content="DJ house da Roma. Set live, date in programma, contatti per booking.">
+<meta property="og:title" content="ANTITESI · DJ &amp; Producer · Roma">
+<meta property="og:description" content="Antitesi. DJ &amp; producer da Roma. Set live, prossime date, contatti per booking.">
 <meta property="og:image" content="/foto/hero.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ANTITESI · DJ House · Roma">
-<meta name="twitter:description" content="DJ house da Roma. Set live, date in programma, contatti per booking.">
+<meta name="twitter:title" content="ANTITESI · DJ &amp; Producer · Roma">
+<meta name="twitter:description" content="Antitesi. DJ &amp; producer da Roma. Set live, prossime date, contatti per booking.">
 <meta name="twitter:image" content="https://antitesi.vercel.app/foto/hero.jpg">
 
 <link rel="icon" type="image/jpeg" href="/logo-antitesi.jpg">
@@ -278,6 +278,7 @@
     gap: 10px;
   }
 
+  .nascosta { display: none !important; }
   .platform {
     display: flex;
     align-items: center;
@@ -1281,6 +1282,9 @@
     document.title = t.title;
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute('content', t.description);
+    [['meta[property="og:title"]', t.title], ['meta[name="twitter:title"]', t.title],
+     ['meta[property="og:description"]', t.description], ['meta[name="twitter:description"]', t.description]]
+      .forEach(([sel, v]) => { const m = document.querySelector(sel); if (m && v) m.setAttribute('content', v); });
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;
       if (t[key] == null) return;
@@ -1345,6 +1349,15 @@
       SITE_CARICATO = true;
     } catch (_) { return; }
 
+    // I testi cambiati dal pannello sovrascrivono quelli di base, lingua
+    // per lingua. Se qualcosa cambia si riapplica la lingua una volta sola.
+    let testiCambiati = false;
+    for (const lang of Object.keys(I18N)) {
+      for (const [k, v] of Object.entries((SITE.testi || {})[lang] || {})) {
+        if (v && I18N[lang][k] !== v) { I18N[lang][k] = v; testiCambiati = true; }
+      }
+    }
+
     const p = SITE.photos || {};
     setSrcIf('.profile img', p.profile);
     if (p.hero) {
@@ -1356,11 +1369,24 @@
     }
 
     const l = SITE.links || {};
-    setAttrIf('[data-platform="youtube"]', 'href', l.youtube);
-    setAttrIf('[data-platform="spotify"]', 'href', l.spotify);
-    setAttrIf('[data-platform="soundcloud"]', 'href', l.soundcloud);
-    setAttrIf('[data-platform="tiktok"]', 'href', l.tiktok);
-    setAttrIf('[data-platform="instagram"]', 'href', l.instagram);
+    // Un link svuotato dal pannello fa sparire la sua scheda; rimesso, torna.
+    ['youtube', 'spotify', 'soundcloud', 'tiktok', 'instagram'].forEach(k => {
+      setAttrIf('[data-platform="' + k + '"]', 'href', l[k]);
+      if (k in l) {
+        document.querySelectorAll('[data-platform="' + k + '"]').forEach(a => a.classList.toggle('nascosta', !l[k]));
+      }
+    });
+
+    const r = SITE.radio;
+    const radioCard = document.querySelector('[data-radio]');
+    if (r && radioCard) {
+      radioCard.classList.toggle('nascosta', r.visibile === false || !r.url);
+      if (r.url) radioCard.setAttribute('href', r.url);
+      const rl = radioCard.querySelector('.label');
+      if (rl && r.title) rl.textContent = r.title;
+      const ri = radioCard.querySelector('img');
+      if (ri && r.cover) ri.src = r.cover;
+    }
     if (l.instagramHandle) {
       const ig = document.querySelector('[data-platform="instagram"] .label');
       if (ig) ig.textContent = l.instagramHandle;
@@ -1378,7 +1404,8 @@
       const tl = document.querySelector('.tagline');
       if (tl) tl.textContent = SITE.tagline;
     }
-    applyBio();
+    if (testiCambiati) applyLang(currentLang);
+    else applyBio();
   }
 
   document.querySelectorAll('.lang button').forEach(btn => {

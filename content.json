@@ -25,5 +25,35 @@
     "title": "",
     "albumUrl": "",
     "clipUrl": ""
+  },
+  "radio": {
+    "title": "Radio Antitesi",
+    "url": "https://soundcloud.com/filippo-nocchia-974873340/sets/radio-antitesi-1",
+    "cover": "/foto/radio-antitesi.jpg",
+    "visibile": true
+  },
+  "testi": {
+    "it": {
+      "listen": "Ascolta",
+      "dates": "Prossime date",
+      "releases": "Tracce",
+      "booking": "Booking",
+      "bookingCta": "Scrivi ad Antitesi",
+      "emptyDatesTitle": "Nessuna data in programma",
+      "emptyDatesBody": "Nuove date in arrivo. Resta aggiornato sui profili social.",
+      "title": "ANTITESI · DJ & Producer · Roma",
+      "description": "Antitesi. DJ & producer da Roma. Set live, prossime date, contatti per booking."
+    },
+    "en": {
+      "listen": "Listen",
+      "dates": "Upcoming dates",
+      "releases": "Tracks",
+      "booking": "Booking",
+      "bookingCta": "Get in touch",
+      "emptyDatesTitle": "No upcoming dates",
+      "emptyDatesBody": "New dates coming soon. Stay tuned on social.",
+      "title": "ANTITESI · DJ & Producer · Rome",
+      "description": "Antitesi. House DJ & producer from Rome. Live sets, upcoming dates, booking contacts."
+    }
   }
 }

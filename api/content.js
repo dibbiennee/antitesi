@@ -10,6 +10,7 @@ function unisci(precedente, arrivato) {
   const out = { ...(precedente || {}) };
   for (const [chiave, valore] of Object.entries(arrivato || {})) {
     if (valore && typeof valore === 'object' && !Array.isArray(valore)) {
+      // testi ha un livello in piu' (lingua), ma ogni lingua arriva intera
       out[chiave] = { ...(out[chiave] || {}), ...valore };
     } else {
       out[chiave] = valore;
@@ -17,6 +18,10 @@ function unisci(precedente, arrivato) {
   }
   return out;
 }
+
+// I testi del sito che si possono cambiare dal pannello, per lingua.
+const CHIAVI_TESTI = ['listen', 'dates', 'releases', 'booking', 'bookingCta',
+  'emptyDatesTitle', 'emptyDatesBody', 'title', 'description'];
 
 // Whitelisted shape so the panel can only set known fields.
 function cleanContent(b) {
@@ -27,6 +32,14 @@ function cleanContent(b) {
   const booking = b.booking || {};
   const zaya = b.zaya || {};
   const bio = b.bio || {};
+  const radio = b.radio || {};
+  const testi = b.testi || {};
+  const testiLingua = (l) => {
+    const src = testi[l] || {};
+    const out = {};
+    for (const k of CHIAVI_TESTI) out[k] = s(src[k]);
+    return out;
+  };
   return {
     tagline: s(b.tagline),
     bio: { it: s(bio.it), en: s(bio.en) },
@@ -45,6 +58,13 @@ function cleanContent(b) {
       instagramHandle: s(links.instagramHandle),
     },
     booking: { email: s(booking.email) },
+    radio: {
+      title: s(radio.title),
+      url: s(radio.url),
+      cover: s(radio.cover),
+      visibile: radio.visibile !== false,
+    },
+    testi: { it: testiLingua('it'), en: testiLingua('en') },
     zaya: {
       title: s(zaya.title),
       albumUrl: s(zaya.albumUrl),
